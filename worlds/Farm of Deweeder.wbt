@@ -9,7 +9,7 @@ WorldInfo {
 Viewpoint {
   position 0.1 0 0.2
   orientation 1 0 0 -1.57
-  follow "MY_ROVER"
+  follow "ROBOT_BASE"
 }
 
 DirectionalLight {
@@ -22,7 +22,7 @@ Background {
   skyColor [0.7 0.9 1.0]
 }
 
-# Brown soil floor - keep as is since it's working
+# Brown soil floor
 Solid {
   translation 0 0 0
   name "floor"
@@ -37,8 +37,7 @@ Solid {
   ]
 }
 
-# ADD CROPS - Green boxes arranged in rows
-# Row 1 (top)
+# Green crops
 Solid {
   translation -0.6 0.8 0.08
   name "crop_1"
@@ -104,273 +103,123 @@ Solid {
   ]
 }
 
-# Row 2 (middle-top)
+# Red weeds - fewer but larger for easier targeting
+# Realistic weed distribution - scattered randomly
 Solid {
-  translation -0.6 0.4 0.08
-  name "crop_6"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation -0.3 0.4 0.08
-  name "crop_7"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0 0.4 0.08
-  name "crop_8"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.3 0.4 0.08
-  name "crop_9"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.6 0.4 0.08
-  name "crop_10"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-# Row 3 (middle-bottom)
-Solid {
-  translation -0.6 0 0.08
-  name "crop_11"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation -0.3 0 0.08
-  name "crop_12"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0 0 0.08
-  name "crop_13"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.3 0 0.08
-  name "crop_14"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.6 0 0.08
-  name "crop_15"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-# Row 4 (bottom)
-Solid {
-  translation -0.6 -0.4 0.08
-  name "crop_16"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation -0.3 -0.4 0.08
-  name "crop_17"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0 -0.4 0.08
-  name "crop_18"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.3 -0.4 0.08
-  name "crop_19"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation 0.6 -0.4 0.08
-  name "crop_20"
-  children [
-    Shape {
-      geometry Box { size 0.1 0.1 0.15 }
-      appearance PBRAppearance { 
-        baseColor 0 1 0
-      }
-    }
-  ]
-}
-
-# ADD WEEDS - Red spheres scattered around
-Solid {
-  translation 0.2 0.6 0.06
+  translation 0.2 0.6 0.06   # Side of field
   name "weed_1"
-  children [
-    Shape {
-      geometry Sphere { radius 0.05 }
-      appearance PBRAppearance { 
-        baseColor 1 0 0
-      }
-    }
-  ]
+  children [Shape {geometry Sphere { radius 0.06 } appearance PBRAppearance { baseColor 1 0 0 }}]
 }
 
 Solid {
-  translation 0.7 0.2 0.06
-  name "weed_2"
-  children [
-    Shape {
-      geometry Sphere { radius 0.05 }
-      appearance PBRAppearance { 
-        baseColor 1 0 0
-      }
-    }
-  ]
+  translation 0.5 -0.2 0.06  # Another area
+  name "weed_2" 
+  children [Shape {geometry Sphere { radius 0.06 } appearance PBRAppearance { baseColor 1 0 0 }}]
 }
 
 Solid {
-  translation -0.4 -0.2 0.06
+  translation 0.8 0.3 0.06   # Different location
   name "weed_3"
-  children [
-    Shape {
-      geometry Sphere { radius 0.05 }
-      appearance PBRAppearance { 
-        baseColor 1 0 0
-      }
-    }
-  ]
+  children [Shape {geometry Sphere { radius 0.06 } appearance PBRAppearance { baseColor 1 0 0 }}]
 }
 
-Solid {
-  translation 0.5 -0.6 0.06
-  name "weed_4"
-  children [
-    Shape {
-      geometry Sphere { radius 0.05 }
-      appearance PBRAppearance { 
-        baseColor 1 0 0
-      }
-    }
-  ]
-}
-
-Solid {
-  translation -0.2 -0.7 0.06
-  name "weed_5"
-  children [
-    Shape {
-      geometry Sphere { radius 0.05 }
-      appearance PBRAppearance { 
-        baseColor 1 0 0
-      }
-    }
-  ]
-}
-
-# E-puck robot
-DEF MY_ROVER E-puck {
+# Main robot base (E-puck) - using your existing controller
+DEF ROBOT_BASE E-puck {
   translation -0.8 0 0.06
   rotation 0 0 1 1.57
+  controller "my_controller"  # Pointing to your existing controller
+}
+
+# Robotic Arm for De-weeding
+DEF DEWEEDER_ARM Robot {
+  translation -0.65 0 0.08  # Positioned on front of E-puck
+  rotation 0 0 1 1.57
+  children [
+    # Arm Base
+    Transform {
+      translation 0.03 0 0
+      children [
+        DEF ARM_BASE Shape {
+          geometry Cylinder {
+            height 0.03
+            radius 0.015
+          }
+          appearance PBRAppearance {
+            baseColor 0.3 0.3 0.3
+          }
+        }
+      ]
+    }
+    
+    # First Arm Segment (Shoulder Joint)
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        anchor 0.05 0 0.015
+      }
+      device [
+        RotationalMotor {
+          name "shoulder_motor"
+          maxTorque 10
+        }
+      ]
+      endPoint Solid {
+        translation 0.05 0 0.015
+        children [
+          DEF ARM_SEGMENT_1 Shape {
+            geometry Box {
+              size 0.08 0.02 0.02
+            }
+            appearance PBRAppearance {
+              baseColor 0.5 0.5 0.5
+            }
+          }
+          Transform {
+            translation 0.04 0 0
+            children [
+              # Second Arm Segment (Elbow Joint)
+              HingeJoint {
+                jointParameters HingeJointParameters {
+                  anchor 0 0 0
+                }
+                device [
+                  RotationalMotor {
+                    name "elbow_motor"
+                    maxTorque 10
+                  }
+                ]
+                endPoint Solid {
+                  translation 0 0 0
+                  children [
+                    DEF ARM_SEGMENT_2 Shape {
+                      geometry Box {
+                        size 0.06 0.015 0.015
+                      }
+                      appearance PBRAppearance {
+                        baseColor 0.7 0.7 0.7
+                      }
+                    }
+                    Transform {
+                      translation 0.03 0 0
+                      children [
+                        # End Effector (Sprayer)
+                        Shape {
+                          geometry Sphere {
+                            radius 0.01
+                          }
+                          appearance PBRAppearance {
+                            baseColor 1 0 0
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
   controller "my_controller"
 }
