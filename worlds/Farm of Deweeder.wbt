@@ -1,0 +1,376 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+  basicTimeStep 64
+}
+
+Viewpoint {
+  position 0.1 0 0.2
+  orientation 1 0 0 -1.57
+  follow "MY_ROVER"
+}
+
+DirectionalLight {
+  direction 0 -1 -0.1
+  intensity 4.0
+  castShadows FALSE
+}
+
+Background {
+  skyColor [0.7 0.9 1.0]
+}
+
+# Brown soil floor - keep as is since it's working
+Solid {
+  translation 0 0 0
+  name "floor"
+  children [
+    Shape {
+      geometry Box { size 2 2 0.1 }
+      appearance PBRAppearance {
+        baseColor 0.8 0.6 0.3
+        roughness 1.0
+      }
+    }
+  ]
+}
+
+# ADD CROPS - Green boxes arranged in rows
+# Row 1 (top)
+Solid {
+  translation -0.6 0.8 0.08
+  name "crop_1"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.3 0.8 0.08
+  name "crop_2"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0 0.8 0.08
+  name "crop_3"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.3 0.8 0.08
+  name "crop_4"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.6 0.8 0.08
+  name "crop_5"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+# Row 2 (middle-top)
+Solid {
+  translation -0.6 0.4 0.08
+  name "crop_6"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.3 0.4 0.08
+  name "crop_7"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0 0.4 0.08
+  name "crop_8"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.3 0.4 0.08
+  name "crop_9"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.6 0.4 0.08
+  name "crop_10"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+# Row 3 (middle-bottom)
+Solid {
+  translation -0.6 0 0.08
+  name "crop_11"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.3 0 0.08
+  name "crop_12"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0 0 0.08
+  name "crop_13"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.3 0 0.08
+  name "crop_14"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.6 0 0.08
+  name "crop_15"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+# Row 4 (bottom)
+Solid {
+  translation -0.6 -0.4 0.08
+  name "crop_16"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.3 -0.4 0.08
+  name "crop_17"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0 -0.4 0.08
+  name "crop_18"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.3 -0.4 0.08
+  name "crop_19"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.6 -0.4 0.08
+  name "crop_20"
+  children [
+    Shape {
+      geometry Box { size 0.1 0.1 0.15 }
+      appearance PBRAppearance { 
+        baseColor 0 1 0
+      }
+    }
+  ]
+}
+
+# ADD WEEDS - Red spheres scattered around
+Solid {
+  translation 0.2 0.6 0.06
+  name "weed_1"
+  children [
+    Shape {
+      geometry Sphere { radius 0.05 }
+      appearance PBRAppearance { 
+        baseColor 1 0 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.7 0.2 0.06
+  name "weed_2"
+  children [
+    Shape {
+      geometry Sphere { radius 0.05 }
+      appearance PBRAppearance { 
+        baseColor 1 0 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.4 -0.2 0.06
+  name "weed_3"
+  children [
+    Shape {
+      geometry Sphere { radius 0.05 }
+      appearance PBRAppearance { 
+        baseColor 1 0 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation 0.5 -0.6 0.06
+  name "weed_4"
+  children [
+    Shape {
+      geometry Sphere { radius 0.05 }
+      appearance PBRAppearance { 
+        baseColor 1 0 0
+      }
+    }
+  ]
+}
+
+Solid {
+  translation -0.2 -0.7 0.06
+  name "weed_5"
+  children [
+    Shape {
+      geometry Sphere { radius 0.05 }
+      appearance PBRAppearance { 
+        baseColor 1 0 0
+      }
+    }
+  ]
+}
+
+# E-puck robot
+DEF MY_ROVER E-puck {
+  translation -0.8 0 0.06
+  rotation 0 0 1 1.57
+  controller "my_controller"
+}
