@@ -1,0 +1,1 @@
+controller_manager:cv_bridge:effort_controllers:gazebo_msgs:geometry_msgs:image_transport:joint_state_publisher:joint_trajectory_controller:rclpy:robot_state_publisher:ros2_control:ros2_controllers:sensor_msgs:std_msgs:xacro
