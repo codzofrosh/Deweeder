@@ -1,0 +1,46 @@
+[1.235s] Invoking command in '/home/rosh/deweeder_ws/src/deweeder_robot': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/rosh/deweeder_ws/build/deweeder_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/deweeder_robot build --build-base /home/rosh/deweeder_ws/build/deweeder_robot/build install --record /home/rosh/deweeder_ws/build/deweeder_robot/install.log --single-version-externally-managed install_data
+[1.622s] running egg_info
+[1.622s] creating ../../build/deweeder_robot/deweeder_robot.egg-info
+[1.657s] writing ../../build/deweeder_robot/deweeder_robot.egg-info/PKG-INFO
+[1.658s] writing dependency_links to ../../build/deweeder_robot/deweeder_robot.egg-info/dependency_links.txt
+[1.658s] writing entry points to ../../build/deweeder_robot/deweeder_robot.egg-info/entry_points.txt
+[1.660s] writing requirements to ../../build/deweeder_robot/deweeder_robot.egg-info/requires.txt
+[1.661s] writing top-level names to ../../build/deweeder_robot/deweeder_robot.egg-info/top_level.txt
+[1.661s] writing manifest file '../../build/deweeder_robot/deweeder_robot.egg-info/SOURCES.txt'
+[1.729s] reading manifest file '../../build/deweeder_robot/deweeder_robot.egg-info/SOURCES.txt'
+[1.730s] writing manifest file '../../build/deweeder_robot/deweeder_robot.egg-info/SOURCES.txt'
+[1.731s] running build
+[1.731s] running build_py
+[1.731s] creating /home/rosh/deweeder_ws/build/deweeder_robot/build
+[1.731s] creating /home/rosh/deweeder_ws/build/deweeder_robot/build/lib
+[1.732s] creating /home/rosh/deweeder_ws/build/deweeder_robot/build/lib/deweeder_robot
+[1.732s] copying deweeder_robot/weed_detector.py -> /home/rosh/deweeder_ws/build/deweeder_robot/build/lib/deweeder_robot
+[1.732s] copying deweeder_robot/arm_controller.py -> /home/rosh/deweeder_ws/build/deweeder_robot/build/lib/deweeder_robot
+[1.732s] running install
+[1.743s] running install_lib
+[1.778s] creating /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot
+[1.779s] copying /home/rosh/deweeder_ws/build/deweeder_robot/build/lib/deweeder_robot/weed_detector.py -> /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot
+[1.779s] copying /home/rosh/deweeder_ws/build/deweeder_robot/build/lib/deweeder_robot/arm_controller.py -> /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot
+[1.779s] byte-compiling /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot/weed_detector.py to weed_detector.cpython-312.pyc
+[1.781s] byte-compiling /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot/arm_controller.py to arm_controller.cpython-312.pyc
+[1.782s] running install_data
+[1.783s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/ament_index
+[1.783s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/ament_index/resource_index
+[1.784s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/ament_index/resource_index/packages
+[1.784s] copying resource/deweeder_robot -> /home/rosh/deweeder_ws/install/deweeder_robot/share/ament_index/resource_index/packages
+[1.784s] copying package.xml -> /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot
+[1.784s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/urdf
+[1.785s] copying urdf/deweeder_robot.urdf -> /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/urdf
+[1.785s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/worlds
+[1.785s] copying worlds/crop_field.world -> /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/worlds
+[1.785s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/config
+[1.785s] copying config/controllers.yaml -> /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/config
+[1.785s] creating /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/launch
+[1.786s] copying launch/deweeder_gazebo.launch.py -> /home/rosh/deweeder_ws/install/deweeder_robot/share/deweeder_robot/launch
+[1.786s] running install_egg_info
+[1.823s] Copying ../../build/deweeder_robot/deweeder_robot.egg-info to /home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages/deweeder_robot-0.0.0-py3.12.egg-info
+[1.826s] running install_scripts
+[2.053s] Installing arm_controller script to /home/rosh/deweeder_ws/install/deweeder_robot/bin
+[2.053s] Installing weed_detector script to /home/rosh/deweeder_ws/install/deweeder_robot/bin
+[2.053s] writing list of installed files to '/home/rosh/deweeder_ws/build/deweeder_robot/install.log'
+[2.087s] Invoked command in '/home/rosh/deweeder_ws/src/deweeder_robot' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/rosh/deweeder_ws/build/deweeder_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rosh/deweeder_ws/install/deweeder_robot/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/deweeder_robot build --build-base /home/rosh/deweeder_ws/build/deweeder_robot/build install --record /home/rosh/deweeder_ws/build/deweeder_robot/install.log --single-version-externally-managed install_data
