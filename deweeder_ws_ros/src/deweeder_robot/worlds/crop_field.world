@@ -51,6 +51,56 @@
       </link>
     </model>
 
+    <!-- Small unevenness bumps to simulate rough / uneven terrain -->
+    <!-- These are static small mounds placed across the field -->
+    <model name="bump_1">
+      <static>true</static>
+      <pose>-2 1 0.05 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><cylinder><radius>0.5</radius><length>0.1</length></cylinder></geometry>
+          <material><ambient>0.25 0.45 0.2 1</ambient><diffuse>0.3 0.6 0.3 1</diffuse></material>
+        </visual>
+        <collision name="collision"><geometry><cylinder><radius>0.5</radius><length>0.1</length></cylinder></geometry></collision>
+      </link>
+    </model>
+
+    <model name="bump_2">
+      <static>true</static>
+      <pose>1 -2 0.03 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>0.8 0.8 0.06</size></box></geometry>
+          <material><ambient>0.25 0.45 0.2 1</ambient><diffuse>0.3 0.6 0.3 1</diffuse></material>
+        </visual>
+        <collision name="collision"><geometry><box><size>0.8 0.8 0.06</size></box></geometry></collision>
+      </link>
+    </model>
+
+    <model name="bump_3">
+      <static>true</static>
+      <pose>4 0.5 0.04 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><sphere><radius>0.35</radius></sphere></geometry>
+          <material><ambient>0.25 0.45 0.2 1</ambient><diffuse>0.3 0.6 0.3 1</diffuse></material>
+        </visual>
+        <collision name="collision"><geometry><sphere><radius>0.35</radius></sphere></geometry></collision>
+      </link>
+    </model>
+
+    <model name="bump_4">
+      <static>true</static>
+      <pose>-1 -3 0.06 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>1.0 0.6 0.08</size></box></geometry>
+          <material><ambient>0.25 0.45 0.2 1</ambient><diffuse>0.3 0.6 0.3 1</diffuse></material>
+        </visual>
+        <collision name="collision"><geometry><box><size>1.0 0.6 0.08</size></box></geometry></collision>
+      </link>
+    </model>
+
     <!-- Crop Rows -->
     <model name="crop_row_1">
       <static>true</static>

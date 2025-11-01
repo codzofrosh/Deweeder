@@ -182,4 +182,32 @@
     </sensor>
   </gazebo>
 
+  <!-- Front Tiller (plough-like implement) -->
+  <link name="tiller_link">
+    <visual>
+      <geometry>
+        <!-- A thin rectangular blade slightly curved could be approximated by a box -->
+        <box size="0.35 0.08 0.02"/>
+      </geometry>
+      <material name="black"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.35 0.08 0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.8"/>
+      <inertia ixx="0.02" ixy="0.0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <joint name="tiller_joint" type="fixed">
+    <parent link="base_chassis"/>
+    <child link="tiller_link"/>
+    <!-- place the tiller in front of the chassis, slightly downwards to contact soil -->
+    <origin xyz="0.28 0 0.02" rpy="0.2 0 0"/>
+  </joint>
+
 </robot>
