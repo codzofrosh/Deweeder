@@ -52,6 +52,7 @@
     </model>
 
     <!-- Small unevenness bumps to simulate rough / uneven terrain -->
+    <!-- These are static small mounds placed across the field -->
     <model name="bump_1">
       <static>true</static>
       <pose>-2 1 0.05 0 0 0</pose>

@@ -186,10 +186,11 @@
   <link name="tiller_link">
     <visual>
       <geometry>
-        <!-- simple flat blade approximated by a thin box -->
+        <!-- A thin rectangular blade slightly curved could be approximated by a box -->
         <box size="0.35 0.08 0.02"/>
       </geometry>
       <material name="black"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
@@ -205,7 +206,7 @@
   <joint name="tiller_joint" type="fixed">
     <parent link="base_chassis"/>
     <child link="tiller_link"/>
-    <!-- forward of chassis and tilted slightly down to touch ground -->
+    <!-- place the tiller in front of the chassis, slightly downwards to contact soil -->
     <origin xyz="0.28 0 0.02" rpy="0.2 0 0"/>
   </joint>
 
