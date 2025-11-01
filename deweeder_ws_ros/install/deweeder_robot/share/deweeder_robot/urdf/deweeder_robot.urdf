@@ -189,7 +189,6 @@
         <box size="0.35 0.08 0.02"/>
       </geometry>
       <material name="black"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
