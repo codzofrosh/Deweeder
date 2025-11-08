@@ -13,14 +13,24 @@ Deweeder is an educational simulation of an autonomous de-weeding robot built wi
 ## Repository Layout
 
 ````markdown
-name=README.md url=https://github.com/codzofrosh/Deweeder/blob/ff58b4dc94332574aa0736e454c6bff0b8a9b080/README.md
+name=README.md url=https://github.com/codzofrosh/Deweeder/blob/main/README.md
 Deweeder/
 ├── controllers/
 │   └── my_controller/
 │       └── my_controller.py      # Python controller for robot and arm
 ├── worlds/
 │   └── Farm of Deweeder.wbt      # Webots world file (farm, crops, weeds, robot)
+├── deweeder_ros/                 # (optional) ROS package for integration with ROS/ROS2
 ````
+
+## ROS Integration
+
+The repository includes an optional deweeder_ros folder (if present) that contains ROS-compatible nodes, launch files, and configuration to run the simulation components under a ROS environment. This can be useful for:
+
+- Integrating the controller with ROS topics/services for perception and control.
+- Testing ROS-based planning or mapping stacks with the simulated robot.
+
+Note: ROS package contents and compatibility (ROS1 vs ROS2) depend on the files in deweeder_ros; check that folder for instructions and any required dependencies.
 
 ## Requirements
 
@@ -33,14 +43,16 @@ Deweeder/
 
 1. Install Webots and confirm it runs on your system.
 2. Install Python dependencies: pip install -r requirements.txt or pip install opencv-python numpy
-3. Open `worlds/Farm of Deweender.wbt` in Webots.
+3. Open `worlds/Farm of Deweeder.wbt` in Webots.
 4. Ensure the robot’s controller is set to `my_controller` (or `my_controller.py`).
-5. Run the simulation. The controller will search for weeds, approach, and remove them.
+5. If using ROS, inspect `deweeder_ros/` for launch files and follow its README or instructions.
+6. Run the simulation. The controller will search for weeds, approach, and remove them.
 
 ## Customization
 
 - World: Edit `worlds/Farm of Deweeder.wbt` to change plant/weeds layout and environment settings.
 - Controller: Modify `controllers/my_controller/my_controller.py` to change detection thresholds, movement strategy, or arm behavior.
+- ROS: If `deweeder_ros/` exists, update its launch/config files to connect to your ROS setup.
 
 ## Notes & Limitations
 
