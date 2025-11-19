@@ -1,0 +1,3 @@
+bool front_trimmer_on
+uint8 belly_trimmer_mode
+bool agitator_pulse

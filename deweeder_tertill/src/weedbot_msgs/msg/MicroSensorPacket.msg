@@ -1,0 +1,10 @@
+int32[4] wheel_encoder
+bool cap_front
+bool cap_left
+bool cap_right
+bool cap_rear
+bool belly_contact
+float32[3] imu_linear
+float32[3] imu_angular
+float32[6] motor_currents
+float32 tick_time

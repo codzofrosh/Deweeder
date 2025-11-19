@@ -1,3 +1,0 @@
-[console_scripts]
-arm_controller = deweeder_robot.arm_controller:main
-weed_detector = deweeder_robot.weed_detector:main
