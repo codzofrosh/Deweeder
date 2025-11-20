@@ -28,6 +28,7 @@ setup(
             'robot_state_node = weedbot_core.robot_state_node:main',
             'behavior_node = weedbot_core.behavior_node:main',
             'safety_node = weedbot_core.safety_node:main',
+            ' hal_node = weedbot_core.hal_node:main'
         ],
     },
 )
