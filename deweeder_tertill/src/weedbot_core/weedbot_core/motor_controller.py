@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""
+motor_controller.py - PID velocity controller with runtime parameters and diagnostics.
+
+Subscribes:
+  - /motion_cmd (weedbot_msgs/MotionCmd) : desired linear_x, angular_z
+  - /micro/sensor_packet (weedbot_msgs/MicroSensorPacket) : encoders & tick_time
+
+Publishes:
+  - /motor_ctrl/diag (std_msgs/String) : diagnostics showing pwm setpoints
+"""
+import time
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+from weedbot_msgs.msg import MotionCmd, MicroSensorPacket
+from rcl_interfaces.msg import SetParametersResult
+
+class PID:
+    def __init__(self, kp=1.0, ki=0.0, kd=0.0, dt=0.05, out_min=-255.0, out_max=255.0):
+        self.kp, self.ki, self.kd = kp, ki, kd
+        self.dt = dt
+        self.integral = 0.0
+        self.prev = 0.0
+        self.out_min = out_min
+        self.out_max = out_max
+
+    def reset(self):
+        self.integral = 0.0
+        self.prev = 0.0
+
+    def step(self, setpoint, measurement):
+        err = setpoint - measurement
+        self.integral += err * self.dt
+        deriv = (err - self.prev) / self.dt if self.dt > 0 else 0.0
+        self.prev = err
+        out = self.kp * err + self.ki * self.integral + self.kd * deriv
+        if out > self.out_max: out = self.out_max
+        if out < self.out_min: out = self.out_min
+        return out
+
+class MotorController(Node):
+    def __init__(self):
+        super().__init__('motor_controller')
+
+        # tunable PID params (defaults)
+        self.declare_parameter('kp', 1.0)
+        self.declare_parameter('ki', 0.1)
+        self.declare_parameter('kd', 0.01)
+        self.declare_parameter('dt', 0.05)
+        self.declare_parameter('max_pwm', 255.0)
+        self.declare_parameter('encoder_scale', 1.0)  # convert encoder counts to speed units
+
+        kp = self.get_parameter('kp').value
+        ki = self.get_parameter('ki').value
+        kd = self.get_parameter('kd').value
+        dt = self.get_parameter('dt').value
+        max_pwm = float(self.get_parameter('max_pwm').value)
+        enc_scale = float(self.get_parameter('encoder_scale').value)
+
+        self.left_pid = PID(kp, ki, kd, dt, out_min=-max_pwm, out_max=max_pwm)
+        self.right_pid = PID(kp, ki, kd, dt, out_min=-max_pwm, out_max=max_pwm)
+
+        # subscribe to param changes to update PID live
+        self.add_on_set_parameters_callback(self._on_param_change)
+
+        self.desired_linear = 0.0
+        self.latest_enc = [0,0,0,0]
+        self.latest_tick_time = 0.05
+        self.encoder_scale = enc_scale
+
+        self.create_subscription(MotionCmd, '/motion_cmd', self.cb_motion, 10)
+        self.create_subscription(MicroSensorPacket, '/micro/sensor_packet', self.cb_sensor, 10)
+
+        self.diag_pub = self.create_publisher(String, '/motor_ctrl/diag', 10)
+        self.get_logger().info('MotorController started (PID params: kp=%s ki=%s kd=%s dt=%s)'% (kp,ki,kd,dt))
+
+    def _on_param_change(self, params):
+        # update PID gains and limits live
+        try:
+            for p in params:
+                if p.name == 'kp':
+                    self.left_pid.kp = p.value; self.right_pid.kp = p.value
+                if p.name == 'ki':
+                    self.left_pid.ki = p.value; self.right_pid.ki = p.value
+                if p.name == 'kd':
+                    self.left_pid.kd = p.value; self.right_pid.kd = p.value
+                if p.name == 'dt':
+                    self.left_pid.dt = p.value; self.right_pid.dt = p.value
+                if p.name == 'max_pwm':
+                    mx = float(p.value)
+                    self.left_pid.out_max = mx; self.left_pid.out_min = -mx
+                    self.right_pid.out_max = mx; self.right_pid.out_min = -mx
+                if p.name == 'encoder_scale':
+                    self.encoder_scale = float(p.value)
+            return SetParametersResult(successful=True)
+        except Exception as e:
+            self.get_logger().error(f"Failed to apply parameters: {e}")
+            return SetParametersResult(successful=False, reason=str(e))
+
+    def cb_motion(self, msg: MotionCmd):
+        self.desired_linear = float(msg.linear_x)
+
+    def cb_sensor(self, msg: MicroSensorPacket):
+        # naive encoder->speed mapping; replace with proper conversion for your hardware
+        try:
+            enc = msg.wheel_encoder
+            self.latest_enc = [int(x) for x in enc]
+            self.latest_tick_time = float(getattr(msg, 'tick_time', 0.05) or 0.05)
+        except Exception:
+            pass
+
+        # compute simple "speed" metric from encoder counts (demo only)
+        # left_speed = avg(front-left, rear-left), right_speed = avg(front-right, rear-right)
+        left_speed = (self.latest_enc[0] + self.latest_enc[1]) / 2.0 * self.encoder_scale
+        right_speed = (self.latest_enc[2] + self.latest_enc[3]) / 2.0 * self.encoder_scale
+
+        # desired setpoint is same for left & right here (differential ignored)
+        setpoint = self.desired_linear
+
+        left_pwm = self.left_pid.step(setpoint, left_speed)
+        right_pwm = self.right_pid.step(setpoint, right_speed)
+
+        # publish diagnostics
+        s = ("PID diag desired=%.3f encL=%.3f encR=%.3f pwmL=%.1f pwmR=%.1f "
+             "kp=%.3f ki=%.3f kd=%.3f")
+        msg = String(data=s % (setpoint, left_speed, right_speed, left_pwm, right_pwm,
+                               self.left_pid.kp, self.left_pid.ki, self.left_pid.kd))
+        self.diag_pub.publish(msg)
+        self.get_logger().debug(msg.data)
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = MotorController()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
