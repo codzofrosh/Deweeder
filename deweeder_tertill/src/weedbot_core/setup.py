@@ -28,9 +28,7 @@ setup(
             'robot_state_node = weedbot_core.robot_state_node:main',
             'behavior_node = weedbot_core.behavior_node:main',
             'safety_node = weedbot_core.safety_node:main',
-            'hal_node = weedbot_core.hal_node:main',
-            'hal_hw_gpio = weedbot_core.hal_hw_gpio:main',
-            'motor_controller = weedbot_core.motor_controller:main'
+            ' hal_node = weedbot_core.hal_node:main'
         ],
     },
 )
