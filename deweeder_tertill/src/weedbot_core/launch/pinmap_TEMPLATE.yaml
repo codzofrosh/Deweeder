@@ -1,0 +1,42 @@
+# PINMAP_TEMPLATE.yaml
+# Template pinmap for HAL backends. Replace values per hardware.
+hw_type: TEMPLATE
+
+motors:
+  - id: 0
+    name: left_front
+    pwm: PWM0
+    dir: DIR0
+    encoder_a: ENC0A
+    encoder_b: ENC0B
+
+  - id: 1
+    name: right_front
+    pwm: PWM1
+    dir: DIR1
+    encoder_a: ENC1A
+    encoder_b: ENC1B
+
+  - id: 2
+    name: left_rear
+    pwm: PWM2
+    dir: DIR2
+    encoder_a: ENC2A
+    encoder_b: ENC2B
+
+  - id: 3
+    name: right_rear
+    pwm: PWM3
+    dir: DIR3
+    encoder_a: ENC3A
+    encoder_b: ENC3B
+
+estop_pin: ESTOP0
+motor_enable_pin: MOTOR_ENABLE
+pwm_frequency_hz: 20000
+pwm_scale: 1.0
+notes: |
+  Replace symbolic names with backend-specific values:
+  - For pigpio: use BCM pin numbers (e.g. 18)
+  - For libgpiod: use chip/line mapping or the library's pin id
+  - For socketCAN: map to CAN IDs in a per-controller YAML
