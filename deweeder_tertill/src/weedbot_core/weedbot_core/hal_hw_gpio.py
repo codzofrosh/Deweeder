@@ -2,23 +2,22 @@
 """
 HAL hardware driver (GPIO/PWM) with heartbeat watchdog and safety guard.
 
-This node reads ROS parameters:
+Parameters:
   - hw_mode (bool): enable real hardware backend (otherwise mock)
-  - hw_backend (string): name of backend ('mock','serial','socketcan') when hw_mode True
+  - hw_backend (string): name of backend ('mock','serial','socketcan')
   - heartbeat_timeout_ms (float): heartbeat stale timeout in milliseconds
   - pinmap_file (string): optional path to pinmap yaml
 
-It publishes:
+Publishes:
   - /hal/ready (std_msgs/Bool)    -> True when driver init succeeded
   - /hal/diag  (std_msgs/String)  -> lightweight diagnostic messages
 
-It subscribes:
+Subscribes:
   - /motion_cmd (weedbot_msgs/MotionCmd)
   - /tool_cmd   (weedbot_msgs/ToolCmd)
   - /safety_cmd (weedbot_msgs/SafetyCmd)
-  - /heartbeat  (std_msgs/Float32)  => updates internal heartbeat timer
+  - /heartbeat  (std_msgs/Float32)
 """
-
 import importlib
 import traceback
 from typing import Optional
@@ -37,7 +36,6 @@ _BACKEND_MAP = {
     "socketcan": "weedbot_core.drivers.socketcan_driver.SocketCANDriver",
 }
 
-
 class HalHW(Node):
     def __init__(self):
         super().__init__("hal_hw_gpio")
@@ -53,6 +51,11 @@ class HalHW(Node):
         self.heartbeat_timeout_ms: float = float(self.get_parameter("heartbeat_timeout_ms").value)
         self.pinmap_file: str = str(self.get_parameter("pinmap_file").value or "")
 
+        # publishers
+        self.hal_ready_pub = self.create_publisher(Bool, '/hal/ready', 10)
+        self.diag_pub = self.create_publisher(String, "/hal/diag", 10)
+
+        # runtime state
         self.safety = 0
         self.latest_motion = MotionCmd()
         self.latest_tool = ToolCmd()
@@ -60,14 +63,11 @@ class HalHW(Node):
         self._driver_ready = False
         self.driver = None
 
-        # topics
+        # subscriptions
         self.create_subscription(MotionCmd, "/motion_cmd", self.cb_motion, 10)
         self.create_subscription(ToolCmd, "/tool_cmd", self.cb_tool, 10)
         self.create_subscription(SafetyCmd, "/safety_cmd", self.cb_safety, 10)
         self.create_subscription(Float32, "/heartbeat", self.cb_heartbeat, 10)
-
-        self.diag_pub = self.create_publisher(String, "/hal/diag", 10)
-        self.hal_ready_pub = self.create_publisher(Bool, "/hal/ready", 10)
 
         # load backend driver
         backend_path = _BACKEND_MAP.get(self.hw_backend, _BACKEND_MAP["mock"]) if self.hw_mode else _BACKEND_MAP["mock"]
@@ -75,7 +75,6 @@ class HalHW(Node):
             module_name, class_name = backend_path.rsplit(".", 1)
             module = importlib.import_module(module_name)
             driver_cls = getattr(module, class_name)
-            # pass pinmap_file in config if provided
             cfg = {"pinmap_file": self.pinmap_file} if self.pinmap_file else {}
             self.driver = driver_cls(config=cfg)
             ok = bool(self.driver.init())
@@ -84,13 +83,13 @@ class HalHW(Node):
         except Exception as e:
             self.get_logger().error(f"Failed to load backend '{backend_path}': {e}")
             self.get_logger().debug(traceback.format_exc())
-            # fallback to mock driver if possible
+            # fallback to mock driver
             try:
                 mod = importlib.import_module("weedbot_core.drivers.mock_driver")
                 Mock = getattr(mod, "MockDriver")
                 self.driver = Mock(config={})
                 self._driver_ready = bool(self.driver.init())
-                self.get_logger().warn("Fell back to MockDriver")
+                self.get_logger().warning("Fell back to MockDriver (init -> %s)" % self._driver_ready)
             except Exception:
                 self._driver_ready = False
                 self.get_logger().error("MockDriver fallback failed")
@@ -134,7 +133,7 @@ class HalHW(Node):
         if self._heartbeat_stale():
             pwm_l = 0.0
             pwm_r = 0.0
-            self.get_logger().warn("Heartbeat stale -> zeroing motion outputs")
+            self.get_logger().warning("Heartbeat stale -> zeroing motion outputs")
         else:
             if self.safety >= 2:
                 pwm_l = 0.0
@@ -148,7 +147,6 @@ class HalHW(Node):
                 pwm_r = max(min(base + diff, MAX_PWM), MIN_PWM)
 
         if self._driver_ready and self.driver is not None and hasattr(self.driver, "set_pwm"):
-            # call driver; driver should handle channel mapping
             try:
                 # assume channel 0 = left, 1 = right in this HAL
                 self.driver.set_pwm(0, pwm_l / MAX_PWM)  # normalized -1..1
@@ -169,9 +167,7 @@ class HalHW(Node):
             front = False if self.safety >= 2 else bool(tool.front_trimmer_on)
 
         if self._driver_ready and self.driver is not None:
-            # driver-specific tool handling (not defined in interface) - safe no-op for mock
             try:
-                # best-effort: if driver implements apply_tool, call it
                 if hasattr(self.driver, "apply_tool"):
                     self.driver.apply_tool(front=front, mode=int(tool.belly_trimmer_mode), safety=int(self.safety))
             except Exception as e:
@@ -190,7 +186,6 @@ class HalHW(Node):
             pass
         super().destroy_node()
 
-
 def main(args=None):
     rclpy.init(args=args)
     node = HalHW()
@@ -201,7 +196,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
