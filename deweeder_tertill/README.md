@@ -266,3 +266,72 @@ Safety verified.
 ✔ watchdog test passed (system halts when behavior_node dies)
 
 The system now represents a fully functional simulated robot pipeline ready for hardware integration.
+
+**Milestone 3**
+ROS 2 (Jazzy) workspace: weedbot_core, weedbot_msgs
+
+Custom messages generated and importable: weedbot_msgs/msg/{MicroSensorPacket,MotionCmd,ToolCmd,SafetyCmd}
+
+Nodes implemented and running:
+
+robot_state_node — reads MicroSensorPacket, publishes /imu, /odom, /robot_state
+
+behavior_node — reads /robot_state, publishes /motion_cmd and /tool_cmd
+
+safety_node — monitors /robot_state, publishes /safety_cmd
+
+motor_controller — subscribes /motion_cmd, interfaces with HAL
+
+hal_hw_gpio — HAL driver (mock mode by default), publishes /hal/ready and /hal/diag
+
+Watchdog & heartbeat test passing (stale heartbeat detection)
+
+Protective gating and safety overrides implemented in HAL/motor controller (simulation)
+
+How to run (commands used for testing)
+
+# build + source
+colcon build --symlink-install
+COLCON_TRACE=0 source install/setup.bash
+
+# launch whole system (simulation)
+ros2 launch weedbot_core robot_core.launch.py hw_mode:=False
+
+# verify nodes
+ros2 node list
+
+# verify HAL readiness and diag
+ros2 topic echo /hal/ready --once
+ros2 topic echo /hal/diag --once
+
+# publish test sensor packet (simulator)
+ros2 topic pub /micro/sensor_packet weedbot_msgs/msg/MicroSensorPacket \
+  "{ tick_time: 0.1, imu_linear: [0.0,0.0,9.8], imu_angular: [0.0,0.0,0.0], \
+     motor_currents: [0,0,0,0,0,0], wheel_encoder: [0,0,0,0], \
+     cap_front: false, cap_left: false, cap_right: false, cap_rear: false, \
+     belly_contact: false }" -r 1
+
+# publish motion command
+ros2 topic pub /motion_cmd weedbot_msgs/msg/MotionCmd "{ linear_x: 0.2, angular_z: 0.0 }" -1
+
+# view motor/hal diagnostics
+ros2 topic echo /hal/diag --once
+
+
+Important dev-debug commands used
+
+ros2 node list
+
+ros2 node info <node>
+
+ros2 topic list -t
+
+ros2 topic echo <topic> --once
+
+ros2 topic pub <topic> <msg> <payload> -r N or -1
+
+./scripts/watchdog_test.sh (integration smoke test)
+
+python3 scripts/safe_motor_ramp.py (ramp test)
+
+ros2 param set/get <node> <param> (tuning PID)
