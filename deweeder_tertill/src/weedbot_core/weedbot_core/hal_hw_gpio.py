@@ -18,16 +18,14 @@ Subscribes:
   - /safety_cmd (weedbot_msgs/SafetyCmd)
   - /heartbeat  (std_msgs/Float32)
 """
-from __future__ import annotations
-
 import importlib
 import traceback
 from typing import Optional
 
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
 from std_msgs.msg import String, Bool, Float32
-
 from weedbot_msgs.msg import MotionCmd, ToolCmd, SafetyCmd
 
 MAX_PWM = 255.0
@@ -41,22 +39,18 @@ _BACKEND_MAP = {
 
 
 class HalHW(Node):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__("hal_hw_gpio")
 
-        # --- declare params (declare names only to avoid rclpy type enforcement crashes) ---
-        # Declaring without typed defaults avoids rclpy rejecting overrides that arrive as strings.
-        try:
-            self.declare_parameter("hw_mode")
-            self.declare_parameter("hw_backend")
-            self.declare_parameter("heartbeat_timeout_ms")
-            self.declare_parameter("pinmap_file")
-        except Exception as e:
-            # extremely defensive: older/newer rclpy could behave differently
-            self.get_logger().warning(f"Parameter declaration warning: {e}")
+        # --- declare parameters with safe defaults (avoid ParameterDescriptor to keep compatibility)
+        # Note: we will coerce values after reading; launch files sometimes pass strings like "False".
+        self.declare_parameter("hw_mode", "False")
+        self.declare_parameter("hw_backend", "mock")
+        self.declare_parameter("heartbeat_timeout_ms", 500.0)
+        self.declare_parameter("pinmap_file", "")
 
-        # helper coercion functions
-        def to_bool(v) -> bool:
+        # helper coercion
+        def to_bool(v):
             if isinstance(v, bool):
                 return v
             if v is None:
@@ -64,55 +58,40 @@ class HalHW(Node):
             s = str(v).strip().lower()
             return s in ("1", "true", "yes", "on")
 
-        def to_float(v, default: float) -> float:
-            try:
-                return float(v)
-            except Exception:
-                return default
+        # read raw values and coerce to expected types (robust to strings from launch)
+        raw_hw_mode = self.get_parameter("hw_mode").value
+        raw_hw_backend = self.get_parameter("hw_backend").value
+        raw_hb_timeout = self.get_parameter("heartbeat_timeout_ms").value
+        raw_pinmap = self.get_parameter("pinmap_file").value
 
-        # read raw values (may be None if not provided)
-        raw_hw_mode = None
-        raw_hw_backend = None
-        raw_hb_timeout = None
-        raw_pinmap = None
-        try:
-            raw_hw_mode = self.get_parameter("hw_mode").value
-            raw_hw_backend = self.get_parameter("hw_backend").value
-            raw_hb_timeout = self.get_parameter("heartbeat_timeout_ms").value
-            raw_pinmap = self.get_parameter("pinmap_file").value
-        except Exception:
-            # parameter not set -> use sane defaults below
-            pass
-
-        # coerce to expected types with safe defaults
-        self.hw_mode: bool = to_bool(raw_hw_mode) if raw_hw_mode is not None else False
+        self.hw_mode: bool = to_bool(raw_hw_mode)
         self.hw_backend: str = str(raw_hw_backend) if raw_hw_backend is not None else "mock"
-        self.heartbeat_timeout_ms: float = to_float(raw_hb_timeout, 500.0)
+        try:
+            self.heartbeat_timeout_ms: float = float(raw_hb_timeout)
+        except Exception:
+            self.heartbeat_timeout_ms = 500.0
         self.pinmap_file: str = str(raw_pinmap or "")
 
-        # --- runtime / state ---
-        self.safety: int = 0
-        self.latest_motion: MotionCmd = MotionCmd()
-        self.latest_tool: ToolCmd = ToolCmd()
-        self.last_heartbeat = self.get_clock().now()
-        self._driver_ready: bool = False
-        self.driver = None
-
-        # --- publishers & subscriptions ---
-        self.hal_ready_pub = self.create_publisher(Bool, "/hal/ready", 10)
+        # publishers
+        self.hal_ready_pub = self.create_publisher(Bool, '/hal/ready', 10)
         self.diag_pub = self.create_publisher(String, "/hal/diag", 10)
 
+        # runtime state
+        self.safety = 0
+        self.latest_motion = MotionCmd()
+        self.latest_tool = ToolCmd()
+        self.last_heartbeat = self.get_clock().now()
+        self._driver_ready = False
+        self.driver = None
+
+        # subscriptions
         self.create_subscription(MotionCmd, "/motion_cmd", self.cb_motion, 10)
         self.create_subscription(ToolCmd, "/tool_cmd", self.cb_tool, 10)
         self.create_subscription(SafetyCmd, "/safety_cmd", self.cb_safety, 10)
         self.create_subscription(Float32, "/heartbeat", self.cb_heartbeat, 10)
 
-        # load backend driver (mock if hw_mode False)
-        backend_path = (
-            _BACKEND_MAP.get(self.hw_backend, _BACKEND_MAP["mock"])
-            if self.hw_mode else
-            _BACKEND_MAP["mock"]
-        )
+        # load backend driver (mock if hw_mode is False)
+        backend_path = _BACKEND_MAP.get(self.hw_backend, _BACKEND_MAP["mock"]) if self.hw_mode else _BACKEND_MAP["mock"]
         try:
             module_name, class_name = backend_path.rsplit(".", 1)
             module = importlib.import_module(module_name)
@@ -125,7 +104,7 @@ class HalHW(Node):
         except Exception as e:
             self.get_logger().error(f"Failed to load backend '{backend_path}': {e}")
             self.get_logger().debug(traceback.format_exc())
-            # fallback to mock driver if available
+            # fallback to mock driver
             try:
                 mod = importlib.import_module("weedbot_core.drivers.mock_driver")
                 Mock = getattr(mod, "MockDriver")
@@ -138,28 +117,20 @@ class HalHW(Node):
 
         # periodic timers
         self.create_timer(0.5, self._publish_ready)
-
-        self.get_logger().info(
-            f"HAL hardware driver started (hw_mode={self.hw_mode} hw_backend={self.hw_backend} "
-            f"hb_timeout_ms={self.heartbeat_timeout_ms})"
-        )
+        self.get_logger().info(f"HAL hardware driver started (hw_mode={self.hw_mode} hw_backend={self.hw_backend} hb_timeout_ms={self.heartbeat_timeout_ms})")
 
     # --- callbacks ---
-    def cb_heartbeat(self, msg: Float32) -> None:
-        # update monotonic heartbeat timestamp
+    def cb_heartbeat(self, msg: Float32):
         self.last_heartbeat = self.get_clock().now()
 
-    def cb_safety(self, msg: SafetyCmd) -> None:
-        try:
-            self.safety = int(msg.state)
-        except Exception:
-            self.safety = 0
+    def cb_safety(self, msg: SafetyCmd):
+        self.safety = int(msg.state)
 
-    def cb_motion(self, msg: MotionCmd) -> None:
+    def cb_motion(self, msg: MotionCmd):
         self.latest_motion = msg
         self.apply_motion(msg)
 
-    def cb_tool(self, msg: ToolCmd) -> None:
+    def cb_tool(self, msg: ToolCmd):
         self.latest_tool = msg
         self.apply_tool(msg)
 
@@ -169,17 +140,20 @@ class HalHW(Node):
         elapsed_ms = (now - self.last_heartbeat).nanoseconds / 1e6
         return elapsed_ms > float(self.heartbeat_timeout_ms)
 
-    def _publish_ready(self) -> None:
+    def _publish_ready(self):
         b = Bool()
         b.data = bool(self._driver_ready)
-        self.hal_ready_pub.publish(b)
-        # publish lightweight diag
+        # publish readiness and diag
+        try:
+            self.hal_ready_pub.publish(b)
+        except Exception:
+            pass
         s = String()
         s.data = f"driver_ready={self._driver_ready} safety={self.safety} hb_stale={self._heartbeat_stale()}"
         self.diag_pub.publish(s)
 
     # core behavior: compute PWMs and either call driver or publish diag
-    def apply_motion(self, motion: MotionCmd) -> None:
+    def apply_motion(self, motion: MotionCmd):
         if self._heartbeat_stale():
             pwm_l = 0.0
             pwm_r = 0.0
@@ -191,16 +165,8 @@ class HalHW(Node):
             else:
                 scale = 200.0
                 turn_scale = 100.0
-                try:
-                    base = float(motion.linear_x)
-                except Exception:
-                    base = 0.0
-                try:
-                    diff = float(motion.angular_z)
-                except Exception:
-                    diff = 0.0
-                base *= scale
-                diff *= turn_scale
+                base = float(motion.linear_x) * scale
+                diff = float(motion.angular_z) * turn_scale
                 pwm_l = max(min(base - diff, MAX_PWM), MIN_PWM)
                 pwm_r = max(min(base + diff, MAX_PWM), MIN_PWM)
 
@@ -218,36 +184,34 @@ class HalHW(Node):
 
         self.get_logger().debug(f"apply_motion -> L={pwm_l:.1f} R={pwm_r:.1f} safety={self.safety}")
 
-    def apply_tool(self, tool: ToolCmd) -> None:
+    def apply_tool(self, tool: ToolCmd):
         if self._heartbeat_stale():
             front = False
         else:
-            front = False if self.safety >= 2 else bool(getattr(tool, "front_trimmer_on", False))
+            front = False if self.safety >= 2 else bool(tool.front_trimmer_on)
 
         if self._driver_ready and self.driver is not None:
             try:
                 if hasattr(self.driver, "apply_tool"):
-                    self.driver.apply_tool(front=front, mode=int(getattr(tool, "belly_trimmer_mode", 0)), safety=int(self.safety))
+                    self.driver.apply_tool(front=front, mode=int(tool.belly_trimmer_mode), safety=int(self.safety))
             except Exception as e:
                 self.get_logger().error(f"Driver apply_tool failed: {e}")
                 self.get_logger().debug(traceback.format_exc())
         else:
-            self.diag_pub.publish(String(data=f"SIM_TOOL front={front} mode={getattr(tool, 'belly_trimmer_mode', 0)} safety={self.safety}"))
+            self.diag_pub.publish(String(data=f"SIM_TOOL front={front} mode={tool.belly_trimmer_mode} safety={self.safety}"))
 
-        self.get_logger().info(f"apply_tool -> front={front} mode={getattr(tool, 'belly_trimmer_mode', 0)} safety={self.safety}")
+        self.get_logger().info(f"apply_tool -> front={front} mode={tool.belly_trimmer_mode} safety={self.safety}")
 
-    def destroy_node(self) -> None:
+    def destroy_node(self):
         try:
             if self.driver:
-                # driver may or may not implement shutdown
-                if hasattr(self.driver, "shutdown"):
-                    self.driver.shutdown()
+                self.driver.shutdown()
         except Exception:
             pass
         super().destroy_node()
 
 
-def main(args=None) -> None:
+def main(args=None):
     rclpy.init(args=args)
     node = HalHW()
     try:
