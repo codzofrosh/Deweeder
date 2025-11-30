@@ -23,7 +23,6 @@ import traceback
 from typing import Optional
 
 import rclpy
-from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 from std_msgs.msg import String, Bool, Float32
 from weedbot_msgs.msg import MotionCmd, ToolCmd, SafetyCmd
