@@ -1,0 +1,197 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="weedbot_tertill">
+    <static>false</static>
+
+    <!-- Base link (box) -->
+    <link name="base_link">
+      <pose>0 0 0.09 0 0 0</pose> <!-- base center Z = 0.09 m -->
+      <inertial>
+        <mass>6.0</mass>
+        <inertia>
+          <!-- approximated from a rectangular box (L x W x H = 0.35 x 0.30 x 0.12 m) -->
+          <ixx>0.0522</ixx>
+          <iyy>0.0684</iyy>
+          <izz>0.1063</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="base_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.35 0.30 0.12</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.2 0.6 0.2 1</ambient>
+          <diffuse>0.2 0.6 0.2 1</diffuse>
+        </material>
+      </visual>
+
+      <collision name="base_collision">
+        <geometry>
+          <box>
+            <size>0.35 0.30 0.12</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Left wheel -->
+    <link name="left_wheel">
+      <!-- left wheel is offset -Y (robot forward = +X) -->
+      <pose>0 -0.11 0.04 0 0 0</pose>
+      <inertial>
+        <mass>0.25</mass>
+        <inertia>
+          <ixx>0.0009</ixx>
+          <iyy>0.0012</iyy>
+          <izz>0.00064</izz>
+        </inertia>
+      </inertial>
+      <visual name="left_wheel_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.08</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <collision name="left_wheel_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.08</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Right wheel -->
+    <link name="right_wheel">
+      <pose>0 0.11 0.04 0 0 0</pose>
+      <inertial>
+        <mass>0.25</mass>
+        <inertia>
+          <ixx>0.0009</ixx>
+          <iyy>0.0012</iyy>
+          <izz>0.00064</izz>
+        </inertia>
+      </inertial>
+      <visual name="right_wheel_visual">
+        <geometry>
+          <cylinder>
+            <radius>0.08</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <collision name="right_wheel_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.08</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Wheel joints (revolute about Y axis) -->
+    <joint name="left_wheel_joint" type="revolute">
+      <parent>base_link</parent>
+      <child>left_wheel</child>
+      <pose>0 -0.11 0.04 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1000</lower>
+          <upper>1000</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="right_wheel_joint" type="revolute">
+      <parent>base_link</parent>
+      <child>right_wheel</child>
+      <pose>0 0.11 0.04 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1000</lower>
+          <upper>1000</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <!-- Small trimmer tool (visual only) -->
+    <link name="trimmer">
+      <pose>0.15 0 0.045 0 0 0</pose>
+      <visual name="trimmer_vis">
+        <geometry>
+          <box><size>0.16 0.06 0.04</size></box>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.2 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name="trimmer_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>trimmer</child>
+    </joint>
+
+    <!-- IMU sensor plugin (publishes /imu). Replace plugin name if your gazebo build differs. -->
+    <plugin name="imu_plugin" filename="libgazebo_imu_sensor.so">
+      <alwaysOn>1</alwaysOn>
+      <updateRate>50</updateRate>
+      <topic>/imu</topic>
+      <gaussianNoise>0.0</gaussianNoise>
+    </plugin>
+
+    <!-- Simple contact bumpers (collision only) - users can add contact plugins if needed -->
+    <link name="bumper_front">
+      <pose>0.20 0 0.02 0 0 0</pose>
+      <collision name="bumper_col">
+        <geometry><box><size>0.10 0.28 0.04</size></box></geometry>
+      </collision>
+    </link>
+    <joint name="bumper_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bumper_front</child>
+    </joint>
+
+    <!-- Diff-drive plugin for gz-sim (name of plugin may need to be adapted for your Gazebo/GZ build) -->
+    <plugin name="diff_drive" filename="libgz-sim-diff-drive-system.so">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+
+      <!-- physical parameters -->
+      <wheel_separation>0.22</wheel_separation> <!-- center-to-center -->
+      <wheel_radius>0.08</wheel_radius>
+
+      <!-- ROS topics -->
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <publish_odom>true</publish_odom>
+      <publish_tf>true</publish_tf>
+
+      <!-- tune if needed -->
+      <wheel_torque>5.0</wheel_torque>
+      <enable_encoder>1</enable_encoder>
+      <encoder_ticks_per_rev>2048</encoder_ticks_per_rev>
+    </plugin>
+
+    <!-- Allow small collisions with ground (keep model contact-enabled) -->
+    <surface>
+      <friction>
+        <ode>
+          <mu>1.0</mu>
+          <mu2>1.0</mu2>
+        </ode>
+      </friction>
+    </surface>
+
+  </model>
+</sdf>

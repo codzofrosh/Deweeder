@@ -1,0 +1,10 @@
+# Minimal ros_gz_bridge topic list.
+# Only /clock and /cmd_vel are enabled by default.
+# Add more mappings as needed. Format:
+#  "<topic>": "<ros_type>[<gz_type>]"
+# Example entry (uncomment to use):
+# /odom: "nav_msgs/msg/Odometry[gz.msgs.Pose]"
+/clock: "rosgraph_msgs/msg/Clock[gz.msgs.Clock]"
+/cmd_vel: "geometry_msgs/msg/Twist[gz.msgs.Twist]"
+# To bridge more sensor/actuator topics add them here.
+# Be careful: gz message types must exist and match the simulator.
