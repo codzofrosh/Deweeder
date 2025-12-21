@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<robot name="weedbot">
+
+  <!-- ================= BASE ================= -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0.06"/>
+      <mass value="5.0"/>
+      <inertia ixx="0.08" iyy="0.08" izz="0.08"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0.06"/>
+      <geometry>
+        <cylinder radius="0.105" length="0.12"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.06"/>
+      <geometry>
+        <cylinder radius="0.105" length="0.12"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ================= WHEELS ================= -->
+
+  <!-- Macro description:
+       Wheels are cylinders rotated so Z-axis is spin axis -->
+
+  <!-- FRONT LEFT -->
+  <link name="wheel_fl_link">
+    <inertial>
+  <origin xyz="0 0 0"/>
+  <mass value="0.3"/>
+  <inertia
+    ixx="0.01"
+    iyy="0.01"
+    izz="0.01"
+    ixy="0.0"
+    ixz="0.0"
+    iyz="0.0"/>
+  </inertial>
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="wheel_fl_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_fl_link"/>
+    <origin xyz="0.07 0.07 -0.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- FRONT RIGHT -->
+  <link name="wheel_fr_link">
+    <inertial>
+  <origin xyz="0 0 0"/>
+  <mass value="0.3"/>
+  <inertia
+    ixx="0.01"
+    iyy="0.01"
+    izz="0.01"
+    ixy="0.0"
+    ixz="0.0"
+    iyz="0.0"/>
+  </inertial>
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="wheel_fr_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_fr_link"/>
+    <origin xyz="-0.07 0.07 -0.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- REAR LEFT -->
+  <link name="wheel_rl_link">
+    <inertial>
+  <origin xyz="0 0 0"/>
+  <mass value="0.3"/>
+  <inertia
+    ixx="0.01"
+    iyy="0.01"
+    izz="0.01"
+    ixy="0.0"
+    ixz="0.0"
+    iyz="0.0"/>
+ </inertial>
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="wheel_rl_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_rl_link"/>
+    <origin xyz="0.07 -0.07 -0.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- REAR RIGHT -->
+  <link name="wheel_rr_link">
+    <inertial>
+  <origin xyz="0 0 0"/>
+  <mass value="0.3"/>
+  <inertia
+    ixx="0.01"
+    iyy="0.01"
+    izz="0.01"
+    ixy="0.0"
+    ixz="0.0"
+    iyz="0.0"/>
+ </inertial>
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="wheel_rr_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_rr_link"/>
+    <origin xyz="-0.07 -0.07 -0.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ================= GAZEBO ================= -->
+
+  <!-- Visual -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- Friction -->
+  <gazebo reference="wheel_fl_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
+  <gazebo reference="wheel_fr_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
+  <gazebo reference="wheel_rl_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
+  <gazebo reference="wheel_rr_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
+
+  <!-- DiffDrive -->
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+
+      <left_joint>wheel_fl_joint</left_joint>
+      <left_joint>wheel_rl_joint</left_joint>
+      <right_joint>wheel_fr_joint</right_joint>
+      <right_joint>wheel_rr_joint</right_joint>
+
+      <wheel_separation>0.14</wheel_separation>
+      <wheel_radius>0.035</wheel_radius>
+
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+
+    </plugin>
+  </gazebo>
+
+</robot>
