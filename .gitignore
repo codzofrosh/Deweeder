@@ -1,0 +1,18 @@
+# ROS 2
+build/
+install/
+log/
+
+# Gazebo
+*.log
+*.state
+*.db
+~/.gazebo/
+
+# VSCode / IDE
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
