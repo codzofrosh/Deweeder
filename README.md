@@ -1,147 +1,224 @@
-# Deweeder Robot Simulation
+# Deweeder: Autonomous Robot Weed Detection & Removal System
 
-Deweeder is an educational simulation of an autonomous de-weeding robot built with Webots and Python. The project demonstrates basic mobile-robot navigation, simple computer-vision weed detection using OpenCV, and a small robotic arm for weed removal in a virtual farm environment. The repository also includes an optional ROS integration package in `deweeder_ros/` for running the simulation and controllers within a ROS environment.
+Deweeder is a comprehensive robotics project demonstrating autonomous agricultural robot development with multiple implementation paths: a **Webots-based simulation** for educational purposes and a **ROS 2 (Jazzy)-based control system** for hardware integration. The project showcases computer vision for weed detection, path planning, robotic manipulation, and safety-critical control systems.
 
-## deweeder_ros — ROS Integration (detailed)
+## 📋 Project Overview
 
-This section explains how to use the deweeder_ros package to run the Deweeder simulation with ROS. The `deweeder_ros/` folder is intended to provide ROS-compatible nodes, message/topic bridges, and launch files that connect Webots simulation components (camera, motors, arm) to ROS topics and services.
+This repository contains implementations for an autonomous de-weeding robot with:
+- **Webots Simulation Environment** - Educational 3D physics simulation with YOLO-based weed detection
+- **ROS 2 Integration (deweeder_tertill)** - Production-ready control stack for the Tertill robot platform
+- **YOLOv8 Computer Vision** - Real-time weed classification and localization
+- **Hardware Abstraction Layer** - Safety-critical control bridging software to hardware
 
-IMPORTANT: The exact files, launch names, and dependencies inside `deweeder_ros/` determine whether it targets ROS1 (Noetic, Melodic) or ROS2 (Humble, Foxy). Check `deweeder_ros/` for a README or the launch/ and package manifests (package.xml / CMakeLists.txt) to confirm target ROS distribution. The instructions below cover typical workflows for both ROS1 and ROS2.
+### Key Features
+- **Real-time Weed Detection**: OpenCV and YOLOv8-based vision pipeline
+- **Autonomous Navigation**: Search patterns and reactive weed-seeking behavior
+- **Robotic Arm Control**: Coordinated shoulder/elbow actuation for weed removal
+- **Safety Systems**: Watchdog monitoring, heartbeat detection, tilt/contact sensors
+- **Hardware Integration**: ROS 2 nodes for sensor fusion, motor control, and tool actuation
+- **Simulation & Testing**: Gazebo/Webots for development before hardware deployment
 
-### Common prerequisites
+## 🚀 Quick Start
 
-- A supported Linux distribution for your ROS version (Ubuntu 20.04 for ROS1 Noetic; Ubuntu 22.04 for ROS2 Humble is common).
-- Webots installed (https://cyberbotics.com/) and in your PATH.
-- Python 3 and project Python deps: `pip install -r requirements.txt` (or `pip install opencv-python numpy`).
-- ROS (see sections below).
+### For Webots Simulation
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-### Check the package layout
+# Run the simulation
+python3 controllers/my_controller/my_controller.py
+# or use Webots IDE to load: worlds/Farm of Deweeder.wbt
+```
 
-Before proceeding, inspect the `deweeder_ros/` folder to see what is included. Typical structure to look for:
+### For ROS 2 (Tertill Robot)
+```bash
+cd deweeder_tertill
+colcon build --symlink-install
+source install/setup.bash
+ros2 launch weedbot_core robot_core.launch.py
+```
 
-````markdown
-deweeder_ros/
-├── package.xml          # ROS package manifest (ROS1/ROS2)
-├── CMakeLists.txt       # build instructions for ROS1 or ROS2
-├── launch/              # ROS1 launch files (.launch) or ROS2 launch (Python)
-├── config/              # any configuration files (params, YAML)
-├── scripts/             # ROS nodes (Python) or executables
-└── README.md            # package-specific instructions (if present)
-````
+### For Full System Simulation (Gazebo)
+```bash
+./start_simulation.sh
+```
 
-If `package.xml` and `CMakeLists.txt` use `ament_*` macros, the package is likely ROS2. If they use `catkin` macros, it is ROS1.
+## 📁 Repository Structure
+
+```
+Deweeder/
+├── controllers/              # Webots robot controllers (Python)
+│   └── my_controller/        # Main deweeder controller with CV pipeline
+├── src/                      # ROS 2 package sources
+│   ├── deweeder_robot/       # Webots-integrated ROS 2 nodes
+│   └── weedbot_simulation_tertill/  # Tertill simulation package
+├── deweeder_tertill/         # Complete ROS 2 Jazzy workspace
+│   ├── src/
+│   │   ├── weedbot_msgs/     # Custom ROS 2 message definitions
+│   │   └── weedbot_core/     # Core robot nodes (state, behavior, safety)
+│   ├── scripts/              # Test/debug helper scripts
+│   └── tests/                # Unit and integration tests
+├── worlds/                   # Webots simulation worlds
+├── protos/                   # Webots PROTO definitions (3D models)
+├── deweeer_yolo_training.py  # YOLOv8 training pipeline (Colab-ready)
+├── Deweeder_Yolov8.ipynb     # Interactive notebook for model training
+└── start_simulation.sh       # Multi-terminal simulation launcher
+
+```
+
+## 🤖 Architecture Overview
+
+### Webots Simulation Path
+- **Controller**: `controllers/my_controller/my_controller.py` - Implements real-world robot behavior
+- **World**: `worlds/Farm of Deweeder.wbt` - Virtual crop field with weeds
+- **Vision**: OpenCV-based HSV color detection + contour tracking
+- **Navigation**: Zig-zag search pattern with reactive weed approach
+
+### ROS 2 Tertill Control Stack
+```
+Sensor Input (IMU, encoders, cameras)
+        ↓
+robot_state_node (sensor fusion → standard ROS messages)
+        ↓
+behavior_node (decision logic)
+        ↓
+motion_cmd / tool_cmd
+        ↓
+motor_controller (PID loops)
+        ↓
+hal_hw_gpio (Hardware Abstraction Layer)
+        ↓
+Physical Motors & Tools
+```
+
+## 🔧 Core Components
+
+### Controllers
+- **my_controller.py** - Main Webots controller implementing weed detection (HSV), navigation (zig-zag), and arm control
+
+### ROS 2 Nodes (deweeder_tertill)
+- **robot_state_node** - Converts sensor packets → IMU, Odometry, RobotState messages
+- **behavior_node** - High-level planner converting robot state → motion & tool commands
+- **safety_node** - Enforces safety constraints (tilt, belly contact, cap detection)
+- **motor_controller** - PID-based velocity control with command filtering
+- **hal_hw_gpio** - Hardware abstraction with GPIO simulation and motor bridging
+
+### Custom Messages
+- `MicroSensorPacket` - Raw sensor data from microcontroller
+- `MotionCmd` - Velocity commands for motors
+- `ToolCmd` - Tool activation states (trimmer, sprayer, etc.)
+- `SafetyCmd` - Safety override signals
+
+## 📊 Development Stages
+
+### Stage 1: Basic Simulation
+- Webots environment with crop/weed models
+- OpenCV detection pipeline
+- Arm IK and movement
+
+### Stage 2: ROS 2 Integration
+- Message generation & topic setup
+- Individual node development
+- Motor controller with PID
+- Watchdog/heartbeat safety
+
+### Stage 3: Hardware Ready
+- Full pipeline integration (perception → control → actuation)
+- Hardware abstraction layer (GPIO/UART bridges)
+- Safety validation on real hardware
+
+## 🧪 Testing & Debugging
+
+### Webots Simulation
+```bash
+# Run controller in Webots IDE
+# View: Weed detection visualization (red mask overlay)
+# Monitor: Console output for state transitions
+```
+
+### ROS 2 System
+```bash
+# List all nodes
+ros2 node list
+
+# Monitor topics in real-time
+ros2 topic echo /robot_state
+ros2 topic echo /motion_cmd
+ros2 topic echo /safety_cmd
+
+# Publish test sensor data
+ros2 topic pub /micro/sensor_packet weedbot_msgs/msg/MicroSensorPacket \
+  "{ tick_time: 0.1, imu_linear: [0,0,9.8], ... }" -r 10
+
+# Run integration tests
+./deweeder_tertill/scripts/watchdog_test.sh
+python3 ./deweeder_tertill/scripts/safe_motor_ramp.py
+```
+
+## 🧠 Computer Vision
+
+### Training YOLOv8 for Weed Detection
+```bash
+# Google Colab notebook with full training pipeline
+jupyter notebook Deweeder_Yolov8.ipynb
+
+# Or use Python script
+python deweeer_yolo_training.py
+```
+
+Features:
+- Supports multiple YOLO variants (nano, small, medium)
+- Automatic dataset validation
+- Checkpoint management
+- Training metrics & visualization
+
+## 📝 Documentation Files
+
+- **README.md** - This file (project overview)
+- **deweeder_tertill/README.md** - Detailed ROS 2 system documentation
+- **Small Gardening Robot with Decision-making Watering System.pdf** - Original research paper
+- **machines-11-00048-v2.pdf** - Academic publication on the system
+
+## 🔌 Requirements
+
+### Webots Simulation
+- Webots 2025a+ (https://cyberbotics.com/)
+- Python 3.8+
+- OpenCV: `pip install opencv-python`
+- NumPy: `pip install numpy`
+
+### ROS 2 Tertill
+- ROS 2 Jazzy (Ubuntu 24.04 recommended)
+- Gazebo 7+ (for physics simulation)
+- Python 3.10+
+- colcon build system
+
+### YOLOv8 Training
+- PyTorch with CUDA support
+- Google Colab (for GPU-accelerated training)
+- Dataset of labeled crop/weed images
+
+## 🛠️ Development & Contribution
+
+This is an active educational robotics project. Key areas for contribution:
+- Hardware integration (motor drivers, sensor interfaces)
+- Path planning algorithms (RRT*, potential fields)
+- Advanced CV models (instance segmentation for precise removal)
+- Gazebo simulation improvements
+- Real-time performance optimization
+
+## 📚 References
+
+- Webots Documentation: https://cyberbotics.com/doc/
+- ROS 2 Documentation: https://docs.ros.org/
+- YOLOv8 Documentation: https://docs.ultralytics.com/
+- Tertill Platform: https://www.tertill.com/
+
+## 👤 Author
+
+Created by Roshan  
+Last Updated: December 2025
 
 ---
 
-## ROS1 (Noetic) — Example setup and run
-
-Use these steps if `deweeder_ros` is a catkin (ROS1) package. Adjust distro names as needed.
-
-1) Install ROS1 Noetic and dependencies (follow official ROS install instructions):
-
-   sudo apt update
-   sudo apt install ros-noetic-desktop-full python3-rosdep python3-catkin-tools
-   sudo rosdep init || true
-   rosdep update
-
-2) Create or use a catkin workspace and clone the repo into src:
-
-   mkdir -p ~/catkin_ws/src
-   cd ~/catkin_ws/src
-   git clone https://github.com/codzofrosh/Deweeder.git
-   cd ~/catkin_ws
-
-3) Install ROS dependencies declared in `deweeder_ros/package.xml` (example):
-
-   rosdep install --from-paths src -i -y --rosdistro noetic
-
-4) Build the workspace:
-
-   catkin_make
-
-5) Source the workspace and ROS environment:
-
-   source /opt/ros/noetic/setup.bash
-   source devel/setup.bash
-
-6) Run the Webots + ROS launch (example):
-
-   roslaunch deweeder_ros deweeder_webots.launch
-
-Replace `deweeder_webots.launch` with the actual launch file name inside `deweeder_ros/launch/`. Typical launch setups will start Webots in paused mode or connect to a running Webots instance via the webots_ros package (webots_ros or webots_ros2 bridge may be required).
-
-7) In other terminals you can inspect topics and nodes:
-
-   rostopic list
-   rosnode list
-   rqt_image_view /camera/image_raw
-
----
-
-## ROS2 (Humble/Foxy) — Example setup and run
-
-If `deweeder_ros` targets ROS2, follow these steps (example uses ROS2 Humble):
-
-1) Install ROS2 and dependencies (see ROS2 installation guide).
-
-2) Create or use a ROS2 workspace and clone repo into src:
-
-   mkdir -p ~/ros2_ws/src
-   cd ~/ros2_ws/src
-   git clone https://github.com/codzofrosh/Deweeder.git
-   cd ~/ros2_ws
-
-3) Install dependencies listed in `deweeder_ros/package.xml` or `package.xml` and any ROS2-specific Python packages:
-
-   rosdep install --from-paths src -i -y --rosdistro humble
-
-4) Build with colcon:
-
-   source /opt/ros/humble/setup.bash
-   colcon build --symlink-install
-
-5) Source the workspace:
-
-   source install/setup.bash
-
-6) Run a launch file (example):
-
-   ros2 launch deweeder_ros deweeder_webots_launch.py
-
-Replace `deweeder_webots_launch.py` with the actual ROS2 launch file name. If the package uses the `webots_ros2` interface, the launch may start Webots and the ROS2 nodes together.
-
-7) Inspect topics and images:
-
-   ros2 topic list
-   ros2 run rqt_image_view rqt_image_view --topic /camera/image_raw
-
----
-
-## Running Webots and ROS together (tips)
-
-- Option A: Launch Webots from the ROS launch file (common when launch includes a Webots node or uses the webots_ros bridge).
-- Option B: Start Webots separately and have ROS nodes connect to it via ROS topics/services. In this case, start Webots, load the `worlds/Farm of Deweeder.wbt` world, start the robot controller in Webots as a ROS-enabled controller, and then source your ROS workspace and run any ROS-specific nodes.
-- Ensure the Webots simulator and ROS are using compatible bridges (e.g., `webots_ros` for ROS1, `webots_ros2` for ROS2).
-
-## Typical topics and services to check
-
-- /camera/image_raw (sensor_msgs/Image) — robot camera feed
-- /cmd_vel (geometry_msgs/Twist) — mobile base velocity commands
-- /arm_controller/command (trajectory_msgs/JointTrajectory) — arm control (varies by controller)
-- /weed_detected (std_msgs/Bool or custom message) — detection flag (if implemented)
-
-Check the `deweeder_ros` code to confirm exact topic names and message types.
-
-## Troubleshooting
-
-- If Webots does not start from the launch file, try launching Webots manually and connect nodes to the running simulator.
-- If topics are missing, confirm the robot controller in Webots is the ROS-enabled controller (it may be under `controllers/` and call ROS APIs).
-- If images are empty or black, verify camera resolution and Webots camera sampling settings.
-
-## If you want, I can: 
-- Create a `deweeder_ros/README.md` with precise commands tailored to the package contents (tell me which ROS distro you target or I can inspect `deweeder_ros/` to detect it),
-- Add example launch files or a minimal bridge if `deweeder_ros` is missing them.
-
----
-
-*Created by Roshan*
+**Status**: Active Development (Milestone 3 - Hardware Integration Ready)
