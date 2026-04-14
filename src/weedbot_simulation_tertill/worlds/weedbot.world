@@ -2,13 +2,7 @@
 <sdf version="1.8">
   <world name="default">
 
-    <!-- Physics -->
-    <!-- <physics name="default_physics" type="dart">
-      <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
-    </physics> -->
-
-    <!-- Required systems -->
+    <!-- ==================== REQUIRED SYSTEMS ==================== -->
     <plugin filename="gz-sim-physics-system"
             name="gz::sim::systems::Physics"/>
 
@@ -18,31 +12,232 @@
     <plugin filename="gz-sim-scene-broadcaster-system"
             name="gz::sim::systems::SceneBroadcaster"/>
 
-    <!-- Ground -->
+    <!--
+      Contact system: required for contact sensors to fire.
+      Must be loaded at world level so Gazebo processes collision contacts.
+    -->
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"/>
+
+    <!-- ==================== LIGHTING ==================== -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- ==================== GROUND ==================== -->
     <model name="ground_plane">
-  <static>true</static>
-  <link name="link">
-    <collision name="collision">
-      <geometry>
-        <plane>
-          <normal>0 0 1</normal>
-          <size>100 100</size>
-        </plane>
-      </geometry>
-    </collision>
-    <visual name="visual">
-      <geometry>
-        <plane>
-          <normal>0 0 1</normal>
-          <size>100 100</size>
-        </plane>
-      </geometry>
-      <material>
-        <ambient>0.6 0.6 0.6 1</ambient>
-        <diffuse>0.6 0.6 0.6 1</diffuse>
-      </material>
-    </visual>
-  </link>
-</model>
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <!-- Dirt-brown ground -->
+            <ambient>0.45 0.30 0.15 1</ambient>
+            <diffuse>0.45 0.30 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!--
+      ==================== CROPS ====================
+      Tall green cylinders (height=0.30 m, radius=0.03 m).
+      Their center is at z=0.15 m (bottom at ground level).
+      At body height they are wider than the robot clearance →
+      they WILL hit the front bumper sensor (z ≈ 0.06–0.10 m).
+
+      Layout: two rows of 5 crops, spaced 0.5 m apart in X,
+      offset ±0.30 m in Y so the robot can drive between rows.
+    -->
+
+    <!-- Row A: Y = +0.30 m -->
+    <model name="crop_A1"><static>true</static>
+      <pose>1.0 0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_A2"><static>true</static>
+      <pose>1.5 0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_A3"><static>true</static>
+      <pose>2.0 0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_A4"><static>true</static>
+      <pose>2.5 0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </Visual>
+      </link>
+    </model>
+
+    <model name="crop_A5"><static>true</static>
+      <pose>3.0 0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Row B: Y = -0.30 m -->
+    <model name="crop_B1"><static>true</static>
+      <pose>1.0 -0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_B2"><static>true</static>
+      <pose>1.5 -0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_B3"><static>true</static>
+      <pose>2.0 -0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_B4"><static>true</static>
+      <pose>2.5 -0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="crop_B5"><static>true</static>
+      <pose>3.0 -0.30 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.1 0.6 0.1 1</ambient><diffuse>0.1 0.6 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!--
+      ==================== WEEDS ====================
+      Short brown cylinders (height=0.04 m, radius=0.025 m).
+      Their center is at z=0.02 m (bottom at ground level).
+      The belly sensor sits at z≈0.02 m above ground → top of weeds
+      (0.04 m) protrudes into the belly sensor collision zone.
+
+      Layout: scattered between the crop rows in the corridor (Y ≈ 0).
+    -->
+
+    <model name="weed_1"><static>true</static>
+      <pose>1.2 0.05 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="weed_2"><static>true</static>
+      <pose>1.6 -0.08 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="weed_3"><static>true</static>
+      <pose>2.1 0.10 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="weed_4"><static>true</static>
+      <pose>2.4 -0.05 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="weed_5"><static>true</static>
+      <pose>2.8 0.12 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="weed_6"><static>true</static>
+      <pose>3.2 -0.10 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.025</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.55 0.35 0.05 1</ambient><diffuse>0.55 0.35 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
   </world>
 </sdf>
