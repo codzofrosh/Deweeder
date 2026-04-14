@@ -92,7 +92,6 @@ class BehaviorNode(Node):
         self._motion_pub = self.create_publisher(MotionCmd, '/motion_cmd', 10)
         self._tool_pub = self.create_publisher(ToolCmd, '/tool_cmd', 10)
         self._hb_pub = self.create_publisher(Float32, '/heartbeat', 10)
-
         # ── Timers ───────────────────────────────────────────────────────
         # Main control loop at 10 Hz
         self._dt = 0.1
@@ -120,12 +119,6 @@ class BehaviorNode(Node):
         self._desired_heading = msg.data
 
     def _safety_cb(self, msg: SafetyCmd):
-        prev = self._safety_state
-        self._safety_state = int(msg.state)
-        if prev != self._safety_state:
-            self.get_logger().info(
-                f'Safety state: {prev} → {self._safety_state}')
-
     def _robot_state_cb(self, state: Twist):
         """
         Receives sensor signals encoded as a Twist (see robot_state_node).
@@ -166,6 +159,7 @@ class BehaviorNode(Node):
 
         if self._state == STATE_MOVING_FORWARD:
             motion.linear_x = scale
+<<<<<<< HEAD
 
             # Steer toward coverage planner heading if available
             if self._desired_heading is not None:
@@ -211,12 +205,49 @@ class BehaviorNode(Node):
         elif self._state == STATE_WEED_DETECTED:
             # Stop immediately, then let the next tick start cutting
             motion.linear_x = 0.0
+=======
+>>>>>>> 919618324112bcf764e7a82a9f7a2792165cc508
             motion.angular_z = 0.0
             tool.front_trimmer_on = False
             tool.belly_trimmer_mode = 0
             tool.agitator_pulse = False
             self._transition(STATE_CUTTING)
 
+<<<<<<< HEAD
+=======
+        elif self._state == STATE_AVOID_OBSTACLE:
+            self._phase_timer += self._dt
+
+            if self._avoid_phase == 'reverse':
+                motion.linear_x = -scale * 0.6   # reverse at 60 % speed
+                motion.angular_z = 0.0
+                if self._phase_timer >= REVERSE_DURATION:
+                    self._phase_timer = 0.0
+                    self._avoid_phase = 'turn'
+                    self.get_logger().info('AVOID: reversing done → turning')
+
+            else:  # 'turn'
+                motion.linear_x = 0.0
+                motion.angular_z = scale * 3.0   # turn in place (left)
+                if self._phase_timer >= TURN_DURATION:
+                    self._phase_timer = 0.0
+                    self._avoid_phase = 'reverse'  # reset for next avoidance
+                    self._transition(STATE_MOVING_FORWARD)
+
+            tool.front_trimmer_on = False
+            tool.belly_trimmer_mode = 0
+            tool.agitator_pulse = False
+
+        elif self._state == STATE_WEED_DETECTED:
+            # Stop immediately, then let the next tick start cutting
+            motion.linear_x = 0.0
+            motion.angular_z = 0.0
+            tool.front_trimmer_on = False
+            tool.belly_trimmer_mode = 0
+            tool.agitator_pulse = False
+            self._transition(STATE_CUTTING)
+
+>>>>>>> 919618324112bcf764e7a82a9f7a2792165cc508
         elif self._state == STATE_CUTTING:
             self._phase_timer += self._dt
             motion.linear_x = 0.0
