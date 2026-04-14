@@ -166,11 +166,97 @@
     <axis xyz="0 0 1"/>
   </joint>
 
+  <!-- ================= FRONT BUMPER SENSOR LINK ================= -->
+  <!--
+    Placed at the very front of the robot (x=+0.115m from base origin),
+    at mid-body height (z=0.06). Thin box covers the full width.
+    Crops are 0.3 m tall, so they'll hit this at body height.
+  -->
+  <link name="bumper_front_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.22 0.08"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 0.5"/>
+      </material>
+    </visual>
+    <collision name="bumper_front_collision">
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.22 0.08"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="bumper_front_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="bumper_front_link"/>
+    <!-- front edge of robot: base radius 0.105 + half bumper depth 0.005 -->
+    <origin xyz="0.110 0 0.06"/>
+  </joint>
+
+  <!-- ================= BELLY SENSOR LINK ================= -->
+  <!--
+    Flat disc under the robot center, 0.02 m above ground.
+    Ground clearance of the base is ~0.035 m (wheel radius 0.035 m,
+    wheel joint z offset = -0.06, visual center z = +0.06).
+    Weeds are 0.04 m tall so their top (0.04 m) is above this sensor (0.02 m)
+    → they'll trigger contact when the robot drives over them.
+  -->
+  <link name="belly_sensor_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.5"/>
+      </material>
+    </visual>
+    <collision name="belly_sensor_collision">
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="belly_sensor_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="belly_sensor_link"/>
+    <!--
+      base_link origin is at wheel-center height (0.035 m above ground).
+      We want the belly sensor at 0.020 m above ground.
+      So z offset = 0.020 - 0.035 = -0.015 m relative to base_link origin.
+    -->
+    <origin xyz="0 0 -0.015"/>
+  </joint>
+
   <!-- ================= GAZEBO ================= -->
 
   <!-- Visual -->
   <gazebo reference="base_link">
     <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="bumper_front_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+  <gazebo reference="belly_sensor_link">
+    <material>Gazebo/Yellow</material>
   </gazebo>
 
   <!-- Friction -->
@@ -178,6 +264,30 @@
   <gazebo reference="wheel_fr_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
   <gazebo reference="wheel_rl_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
   <gazebo reference="wheel_rr_link"><mu1>1.0</mu1><mu2>1.0</mu2></gazebo>
+
+  <!-- Front bumper contact sensor -->
+  <gazebo reference="bumper_front_link">
+    <sensor name="front_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <update_rate>50</update_rate>
+      <contact>
+        <collision>bumper_front_link_collision</collision>
+      </contact>
+      <topic>/gazebo/front_contact</topic>
+    </sensor>
+  </gazebo>
+
+  <!-- Belly contact sensor -->
+  <gazebo reference="belly_sensor_link">
+    <sensor name="belly_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <update_rate>50</update_rate>
+      <contact>
+        <collision>belly_sensor_link_collision</collision>
+      </contact>
+      <topic>/gazebo/belly_contact</topic>
+    </sensor>
+  </gazebo>
 
   <!-- DiffDrive -->
   <gazebo>
@@ -198,6 +308,10 @@
       <robot_base_frame>base_link</robot_base_frame>
 
     </plugin>
+
+    <!-- Contact system must be loaded at world level, declared here for reference -->
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"/>
   </gazebo>
 
 </robot>

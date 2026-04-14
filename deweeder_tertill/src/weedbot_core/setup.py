@@ -30,7 +30,8 @@ setup(
             'safety_node = weedbot_core.safety_node:main',
             'hal_node = weedbot_core.hal_node:main',
             'hal_hw_gpio = weedbot_core.hal_hw_gpio:main',
-            'motor_controller = weedbot_core.motor_controller:main'
+            'motor_controller = weedbot_core.motor_controller:main',
+            'sim_sensor_bridge = weedbot_core.sim_sensor_bridge_node:main'
         ],
     },
 )
