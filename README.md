@@ -6,6 +6,8 @@ The material below describes the historical autonomous prototypes. Its hardware-
 
 Latest experiment: [multiple passes and explicit guard geometry](docs/multipass_pilot.md), following the [paired geometry comparison](docs/comparison_pilot.md). The new pilot evaluates 4,800 operations on 100 independent synthetic strips, with deduplicated exposure/contact counts and reposition time. These comparisons expose coverage and clearance limitations; they do not establish physical weed-control performance.
 
+Follow-up: [missed-weed accounting](docs/miss_analysis.md) separates near-crop misses, fixed-layout gaps and lost nominal exposure, and provides an [unpowered bench specification](docs/unpowered_guard_bench.md).
+
 Deweeder is a comprehensive robotics project demonstrating autonomous agricultural robot development with multiple implementation paths: a **Webots-based simulation** for educational purposes and a **ROS 2 (Jazzy)-based control system** for hardware integration. The project showcases computer vision for weed detection, path planning, robotic manipulation, and safety-critical control systems.
 
 ## 📋 Project Overview

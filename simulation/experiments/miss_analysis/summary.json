@@ -1,0 +1,59 @@
+{
+  "assumptions": [
+    "near_crop is a diagnostic threshold, not a validated safe distance",
+    "classification precedence: exposed, missed near_crop, nominal_gap or path_error",
+    "path_error means loss relative to ideal zero-error always-active nominal passes",
+    "no physical safety or removal inference; intervals resample entire strips"
+  ],
+  "counts": {
+    "exposed": 3549,
+    "near_crop": 435,
+    "nominal_gap": 808,
+    "path_error": 279
+  },
+  "crop_clearance_threshold_m": 0.03,
+  "evidence_class": "SIMULATED",
+  "exposed_near_crop_count": 37,
+  "gained_outside_nominal_count": 210,
+  "independent_strips": 100,
+  "input_metadata_sha256": "90b5a83159f79dab40a95004c34b71c1d54da2377d933bf13347fd011a4ed5b5",
+  "lost_nominal_exposure_count": 279,
+  "nominal_exposed_count": 3618,
+  "selector": {
+    "bound": 0.03,
+    "guard": "open_front_u",
+    "layout": "inset_four",
+    "mode": "independent"
+  },
+  "source_sha256": {
+    "geometry/misses.py": "dd9724f673dedea2a967827b0a9c64de3b2f30eff077fc9ab399b95067238a8b",
+    "monte_carlo/miss_analysis.py": "eb63c54faaf9840bba576957560596840414c75a196c74b40a729683cd04cb39"
+  },
+  "target_count": 5071,
+  "uncertainty": {
+    "exposed": {
+      "ci_high": 0.7150075364124234,
+      "ci_low": 0.6843899210677681,
+      "fraction": 0.6998619601656478,
+      "status": "ok"
+    },
+    "near_crop": {
+      "ci_high": 0.0937815847531745,
+      "ci_low": 0.0779246332152029,
+      "fraction": 0.08578189706172352,
+      "status": "ok"
+    },
+    "nominal_gap": {
+      "ci_high": 0.1688868739759861,
+      "ci_low": 0.1486513776668561,
+      "fraction": 0.15933740879510944,
+      "status": "ok"
+    },
+    "path_error": {
+      "ci_high": 0.06411430377235333,
+      "ci_low": 0.046079323731745586,
+      "fraction": 0.055018733977519226,
+      "status": "ok"
+    }
+  }
+}

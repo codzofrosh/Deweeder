@@ -1,0 +1,25 @@
+# ESTIMATED fixture dimensions. No motors, blades, line, or powered tests.
+evidence_class: ESTIMATED
+observation_length_m: 2.5
+run_in_m: 0.2
+run_out_m: 0.2
+row_spacing_m: 0.5
+nominal_post_spacing_m: 0.3
+surrogate_crop_radius_m: 0.025
+dummy_tool_radius_m: 0.04
+inset_pass_offsets_m: [0.12, 0.21, 0.29, 0.38]
+imposed_lateral_offsets_m: [-0.03, -0.01, 0.0, 0.01, 0.03]
+guide_repeat_count: 10
+diagnostic_weed_crop_surface_clearance_m: 0.03
+# Geometry-only acceptance hypotheses; these do not authorize powered testing.
+record_fields:
+  - trial_id
+  - guard_profile
+  - pass_offset_m
+  - imposed_offset_m
+  - measured_path_offset_m
+  - crop_surrogate_contact
+  - guard_contact
+  - mount_slip
+  - repeatability_error_m
+  - observation_notes

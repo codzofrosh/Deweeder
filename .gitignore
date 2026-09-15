@@ -29,3 +29,5 @@ simulation/experiments/*/examples.json
 simulation/experiments/*/examples/
 simulation/experiments/*/*.svg
 !simulation/experiments/baseline/events.csv
+simulation/experiments/*/targets.csv
+simulation/experiments/*/fixtures.csv
