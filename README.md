@@ -1,4 +1,10 @@
-# Deweeder: Autonomous Robot Weed Detection & Removal System
+# Deweeder: Precision Mechanical Weed-Control R&D
+
+Current development focuses on simple mechanical mechanisms, crop clearance and controlled bench experiments. Start with the [geometry simulator](docs/geometry_simulator.md), [repository audit](docs/current_state_audit.md) and [pivot architecture](docs/pivot_architecture.md). The standalone geometry tool runs without ROS2 or Webots; its results are geometric exposure, not measured weed removal or crop safety.
+
+The material below describes the historical autonomous prototypes. Its hardware-readiness and safety claims are superseded by the audit. Existing vision and autonomous-arm experiments are preserved and frozen.
+
+Latest experiment: [multiple passes and explicit guard geometry](docs/multipass_pilot.md), following the [paired geometry comparison](docs/comparison_pilot.md). The new pilot evaluates 4,800 operations on 100 independent synthetic strips, with deduplicated exposure/contact counts and reposition time. These comparisons expose coverage and clearance limitations; they do not establish physical weed-control performance.
 
 Deweeder is a comprehensive robotics project demonstrating autonomous agricultural robot development with multiple implementation paths: a **Webots-based simulation** for educational purposes and a **ROS 2 (Jazzy)-based control system** for hardware integration. The project showcases computer vision for weed detection, path planning, robotic manipulation, and safety-critical control systems.
 

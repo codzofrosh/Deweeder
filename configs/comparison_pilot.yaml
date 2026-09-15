@@ -1,0 +1,14 @@
+# SIMULATED engineering fixture. These values are not measured farm conditions.
+base_config: simulation_baseline.yaml
+base_overrides:
+  plant_spacing_variance: 0.0004
+  weed_density: 40.0
+comparison:
+  fixture_count: 100
+  seed_start: 1000
+  bootstrap_samples: 500
+  bootstrap_seed: 2026
+  mechanisms: [trimmer, tine, hoe]
+  speeds: [0.1, 0.25, 0.5, 1.0]
+  path_offsets: [0.25, 0.08]
+  lateral_bounds: [0.0, 0.01, 0.03, 0.05]

@@ -16,3 +16,16 @@ log/
 # Python
 __pycache__/
 *.pyc
+.venv-geometry/
+.mpl-cache/
+
+# Detailed experiment data is reproducible from the committed YAML profiles.
+# Keep compact summaries, metadata and PNG previews in version control.
+simulation/experiments/*/events.csv
+simulation/experiments/*/events.csv.gz
+simulation/experiments/*/rows.csv
+simulation/experiments/*/fields.json
+simulation/experiments/*/examples.json
+simulation/experiments/*/examples/
+simulation/experiments/*/*.svg
+!simulation/experiments/baseline/events.csv

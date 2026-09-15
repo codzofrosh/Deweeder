@@ -1,0 +1,24 @@
+base_config: simulation_baseline.yaml
+base_overrides:
+  plant_spacing_variance: 0.0004
+  weed_density: 40.0
+experiment:
+  fixture_count: 100
+  seed_start: 2000
+  bootstrap_samples: 500
+  bootstrap_seed: 2026
+  reposition_seconds: 5.0
+  layouts:
+    single: [0.25]
+    three: [0.15, 0.25, 0.35]
+    inset_four: [0.12, 0.21, 0.29, 0.38]
+    five: [0.05, 0.15, 0.25, 0.35, 0.45]
+  lateral_bounds: [0.0, 0.01, 0.03]
+  error_modes: [systematic, independent]
+  guards:
+    disk:
+      - {name: body, shape: disk, radius: 0.06}
+    open_front_u:
+      - {name: left_rail, shape: rectangle, x: 0.0, y: 0.05, width: 0.008, length: 0.14}
+      - {name: right_rail, shape: rectangle, x: 0.0, y: -0.05, width: 0.008, length: 0.14}
+      - {name: rear_bar, shape: rectangle, x: -0.074, y: 0.0, width: 0.108, length: 0.008}

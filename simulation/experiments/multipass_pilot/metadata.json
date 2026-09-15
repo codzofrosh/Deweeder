@@ -1,0 +1,143 @@
+{
+  "artifact_sha256": {
+    "aggregates.csv": "1d15d5d23a8cecce2f599ef52f6c2b51d8168b36c9fa8f4c6d8a5fc46e321f31",
+    "events.csv.gz": "53dd9edeba5d5ebb5bbbbc2d796e3722e209580a029f308954f819437124522c",
+    "examples.json": "b5c908ff04944d75e5ff8ee3a76d4dd77a91dbc67d865088a790774832f206f4",
+    "fields.json": "042b83f4867cb60d8ddcf960e3af31dbf192dfd4886891eebbf8fb395c7cf971",
+    "rows.csv": "7dc6308cf45d6868807e15ebd257a342eafbe3ce2ed1bb55ccbd089b3380f1a1"
+  },
+  "assumptions": [
+    "union of exposed plant IDs across passes, not sum of pass counts",
+    "same fields and latent biases paired across guards and layouts",
+    "all passes forward; inactive repositioning outside field is assumed, not simulated",
+    "reposition time is estimated, not measured; no injury or suppression model",
+    "guard projection cannot deflect a crop or inhibit the active tool",
+    "error is constant per pass; systematic shared across passes, independent resampled per pass"
+  ],
+  "base_config": {
+    "command_off": null,
+    "command_on": 0.0,
+    "crop_height": 0.15,
+    "crop_radius": 0.025,
+    "guard_radius": 0.06,
+    "max_plants": 100000,
+    "mechanism": "trimmer",
+    "path_offset": 0.25,
+    "plant_spacing": 0.3,
+    "plant_spacing_variance": 0.0004,
+    "robot_heading_error": 0.0,
+    "robot_lateral_error": 0.0,
+    "row_count": 2,
+    "row_length": 2.5,
+    "row_spacing": 0.5,
+    "run_in": 0.2,
+    "sample_period": 0.05,
+    "seed": 0,
+    "tool_active_radius": 0.04,
+    "tool_coast_down": 0.0,
+    "tool_depth": 0.0,
+    "tool_length": 0.02,
+    "tool_response_time": 0.0,
+    "tool_width": 0.08,
+    "vehicle_speed": 0.25,
+    "weed_density": 40.0,
+    "weed_distribution": "uniform",
+    "weed_radius": 0.01
+  },
+  "evidence_class": "SIMULATED",
+  "independent_strip_count": 100,
+  "operation_count": 4800,
+  "pass_count": 15600,
+  "plan": {
+    "bootstrap_samples": 500,
+    "bootstrap_seed": 2026,
+    "error_modes": [
+      "systematic",
+      "independent"
+    ],
+    "fixture_count": 100,
+    "guards": {
+      "disk": [
+        {
+          "name": "body",
+          "radius": 0.06,
+          "shape": "disk"
+        }
+      ],
+      "open_front_u": [
+        {
+          "length": 0.14,
+          "name": "left_rail",
+          "shape": "rectangle",
+          "width": 0.008,
+          "x": 0.0,
+          "y": 0.05
+        },
+        {
+          "length": 0.14,
+          "name": "right_rail",
+          "shape": "rectangle",
+          "width": 0.008,
+          "x": 0.0,
+          "y": -0.05
+        },
+        {
+          "length": 0.008,
+          "name": "rear_bar",
+          "shape": "rectangle",
+          "width": 0.108,
+          "x": -0.074,
+          "y": 0.0
+        }
+      ]
+    },
+    "lateral_bounds": [
+      0.0,
+      0.01,
+      0.03
+    ],
+    "layouts": {
+      "five": [
+        0.05,
+        0.15,
+        0.25,
+        0.35,
+        0.45
+      ],
+      "inset_four": [
+        0.12,
+        0.21,
+        0.29,
+        0.38
+      ],
+      "single": [
+        0.25
+      ],
+      "three": [
+        0.15,
+        0.25,
+        0.35
+      ]
+    },
+    "reposition_seconds": 5.0,
+    "seed_start": 2000
+  },
+  "python_version": "3.11.15 (main, Jul 23 2026, 14:42:43) [MSC v.1944 64 bit (AMD64)]",
+  "schema_version": 1,
+  "source_sha256": {
+    "geometry/__init__.py": "63c7212962dc0bec2854f903638a73c10d462624b3c244a090a307d9e9cff55b",
+    "geometry/__main__.py": "7ed2809d7b1eee049689d71260f3b105312d702a455956e6bf419411abb51368",
+    "geometry/config.py": "64831506e23761edbfc4babd4983b5787193826e939b104fbe798f2dedfd9de4",
+    "geometry/export.py": "899ec17576be36171d7e7780e31901480ddc4e3c0cb08e760bb33e0542bb8833",
+    "geometry/field.py": "3992d0b28fc01e25d067dc3965a9670828805add6fadfd06b2f4075a1d4b358a",
+    "geometry/kernel.py": "a7b4dc96b18e5c5dccf9fb64660b9ada265717db3806ceac19d5ab4d8caf51e2",
+    "geometry/multipass.py": "d006d00d034b8b55c6bcddd8d92d4af9e52f085825e488f7715477f6bb211707",
+    "monte_carlo/__init__.py": "83c77b4fdf2ddcef65cfd194f78345e856899c49a756a47a6928bc064c21d978",
+    "monte_carlo/__main__.py": "7cd6d46a72ab689251200fb39e44ce76c4dc24b83178ce535dfb77a9857b6f2c",
+    "monte_carlo/operation_plots.py": "3091980f0a589a8b2306abd3c6c2040b2b56bb6e6153dc24f5a6a0aa27705d3f",
+    "monte_carlo/operations.py": "f65c40abf04fc0a2e8ad13a39088e2a936bd67d8a297f5270d2a1d3acc3c4f91",
+    "monte_carlo/plots.py": "ad8c7ba74eff372cd7da859b01f6acf57dc88141e6215fcab7ca893771832c44",
+    "monte_carlo/runner.py": "601db0bb9e95bcfc08034ef86eb4f5c5b8c7cf8226460d8aba7a93bbfcce72c1",
+    "monte_carlo/statistics.py": "ad4f677d6e0c23d9faecf5107e65739c3721f781cfbc8e5c4132e2fb5db31f48"
+  }
+}

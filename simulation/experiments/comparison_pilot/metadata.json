@@ -1,0 +1,97 @@
+{
+  "artifact_sha256": {
+    "aggregates.csv": "15ec618f28477f30ffdaea4f3935832bad9e75b23f582a8fc6016fa2c3034b9c",
+    "events.csv": "7009fbc8e22bea7de0220671e5bd274a0a821220f21ae519814d23457b4d8bfd",
+    "fields.json": "b80f82a67ec56354e98726957a2ab073ee2ab0bd521d4fe469b5b6b99cabeb73",
+    "paired_differences.csv": "52d161ec519b0b2105b1308939a443039f99caf7e4484feba6f6a653565fd79e",
+    "rows.csv": "84298b90a1d17e0865760bb09288528f78e64b5fd9af86406403baed4c24aee0"
+  },
+  "assumptions": [
+    "independent unit is a seeded multi-row strip, not a plant",
+    "same field seeds reused across cells and mechanisms",
+    "signed uniform lateral bias shared across mechanisms, constant per pass",
+    "pointwise intervals; grid cells are correlated and not independent evidence",
+    "full active envelopes; no mechanical protection control or biology",
+    "bootstrap cannot bound unseen failure in an all-zero sample"
+  ],
+  "base_config": {
+    "command_off": null,
+    "command_on": 0.0,
+    "crop_height": 0.15,
+    "crop_radius": 0.025,
+    "guard_radius": 0.06,
+    "max_plants": 100000,
+    "mechanism": "trimmer",
+    "path_offset": 0.25,
+    "plant_spacing": 0.3,
+    "plant_spacing_variance": 0.0004,
+    "robot_heading_error": 0.0,
+    "robot_lateral_error": 0.0,
+    "row_count": 2,
+    "row_length": 2.5,
+    "row_spacing": 0.5,
+    "run_in": 0.2,
+    "sample_period": 0.05,
+    "seed": 0,
+    "tool_active_radius": 0.04,
+    "tool_coast_down": 0.0,
+    "tool_depth": 0.0,
+    "tool_length": 0.02,
+    "tool_response_time": 0.0,
+    "tool_width": 0.08,
+    "vehicle_speed": 0.25,
+    "weed_density": 40.0,
+    "weed_distribution": "uniform",
+    "weed_radius": 0.01
+  },
+  "evidence_class": "SIMULATED",
+  "independent_fixture_count": 100,
+  "package_versions": {
+    "PyYAML": "6.0.3",
+    "matplotlib": "3.11.2",
+    "numpy": "2.4.6"
+  },
+  "plan": {
+    "bootstrap_samples": 500,
+    "bootstrap_seed": 2026,
+    "fixture_count": 100,
+    "lateral_bounds": [
+      0.0,
+      0.01,
+      0.03,
+      0.05
+    ],
+    "mechanisms": [
+      "trimmer",
+      "tine",
+      "hoe"
+    ],
+    "path_offsets": [
+      0.25,
+      0.08
+    ],
+    "seed_start": 1000,
+    "speeds": [
+      0.1,
+      0.25,
+      0.5,
+      1.0
+    ]
+  },
+  "python_version": "3.11.15 (main, Jul 23 2026, 14:42:43) [MSC v.1944 64 bit (AMD64)]",
+  "schema_version": 1,
+  "simulation_count": 9600,
+  "source_files_sha256": {
+    "geometry/__init__.py": "63c7212962dc0bec2854f903638a73c10d462624b3c244a090a307d9e9cff55b",
+    "geometry/__main__.py": "7ed2809d7b1eee049689d71260f3b105312d702a455956e6bf419411abb51368",
+    "geometry/config.py": "64831506e23761edbfc4babd4983b5787193826e939b104fbe798f2dedfd9de4",
+    "geometry/export.py": "899ec17576be36171d7e7780e31901480ddc4e3c0cb08e760bb33e0542bb8833",
+    "geometry/field.py": "3992d0b28fc01e25d067dc3965a9670828805add6fadfd06b2f4075a1d4b358a",
+    "geometry/kernel.py": "a7b4dc96b18e5c5dccf9fb64660b9ada265717db3806ceac19d5ab4d8caf51e2",
+    "monte_carlo/__init__.py": "83c77b4fdf2ddcef65cfd194f78345e856899c49a756a47a6928bc064c21d978",
+    "monte_carlo/__main__.py": "7cd6d46a72ab689251200fb39e44ce76c4dc24b83178ce535dfb77a9857b6f2c",
+    "monte_carlo/plots.py": "ad8c7ba74eff372cd7da859b01f6acf57dc88141e6215fcab7ca893771832c44",
+    "monte_carlo/runner.py": "601db0bb9e95bcfc08034ef86eb4f5c5b8c7cf8226460d8aba7a93bbfcce72c1",
+    "monte_carlo/statistics.py": "ad4f677d6e0c23d9faecf5107e65739c3721f781cfbc8e5c4132e2fb5db31f48"
+  }
+}

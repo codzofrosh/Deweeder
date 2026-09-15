@@ -1,0 +1,29 @@
+# SIMULATED synthetic fixture; SI units, not an agronomic recommendation.
+row_spacing: 0.5
+plant_spacing: 0.3
+plant_spacing_variance: 0.0 # m², before positive truncation
+crop_radius: 0.025
+crop_height: 0.15
+weed_density: 20.0 # plants/m² in the entire declared rectangle
+weed_distribution: uniform
+weed_radius: 0.01
+robot_lateral_error: 0.0 # signed fixed bias in m
+robot_heading_error: 0.0 # signed fixed bias in rad
+tool_width: 0.08
+tool_depth: 0.0 # metadata: positive below soil
+tool_active_radius: 0.04 # disk radius must equal width/2
+tool_response_time: 0.0
+vehicle_speed: 0.25
+row_length: 2.5
+row_count: 2
+path_offset: 0.25
+guard_radius: 0.06
+tool_length: 0.02
+mechanism: trimmer
+seed: 0
+run_in: 0.2
+command_on: 0.0
+command_off: null # end of travel
+tool_coast_down: 0.0
+sample_period: 0.05
+max_plants: 100000
