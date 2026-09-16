@@ -46,9 +46,26 @@ _DUTY_SCALE = 10000        # maps 0.0-1.0 → 0-10000
 class SocketCANDriver(MotorDriverInterface):
     """
     CAN bus driver via python-can / SocketCAN.
-    Falls back gracefully if python-can is not installed or the interface
-    is not available.
+    Transport failures propagate; tool control is not implemented or verified.
     """
+
+    supports_tool = False
+
+    def is_healthy(self) -> bool:
+        """Transport status only; no physical actuator or firmware verification."""
+        return bool(self._ready and self._bus is not None and self._last_error is None)
+
+    def apply_tool(self, front: bool, mode: int, agitator: bool) -> None:
+        if type(front) is not bool or type(agitator) is not bool or type(mode) is not int or mode < 0:
+            raise ValueError('tool state requires booleans and a nonnegative integer mode')
+        if front or mode or agitator:
+            raise NotImplementedError('tool firmware protocol is not implemented or verified')
+        # Neutral is an interface no-op, NOT a verified physical tool stop.
+        # The gate refuses hardware arming while supports_tool remains False.
+
+    def _require_healthy(self) -> None:
+        if not self.is_healthy():
+            raise RuntimeError('driver transport is unavailable or faulted') from self._last_error
 
     def __init__(
         self,
@@ -62,6 +79,7 @@ class SocketCANDriver(MotorDriverInterface):
 
         self._bus = None
         self._ready = False
+        self._last_error = None
         self._lock = threading.Lock()
 
         # Cached sensor data
@@ -76,41 +94,41 @@ class SocketCANDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def init(self) -> bool:
+        if self._bus is not None:
+            raise RuntimeError('driver already has a transport; shutdown before reinitializing')
         try:
-            import can  # type: ignore
-        except ImportError:
-            return False  # python-can not installed → HAL falls back to mock
-
-        try:
-            self._bus = can.interface.Bus(
-                channel=self._interface,
-                bustype='socketcan',
-                bitrate=self._bitrate,
-            )
+            import can
+            self._bus = can.interface.Bus(channel=self._interface, bustype='socketcan', bitrate=self._bitrate)
+            self._last_error = None
             self._ready = True
-        except Exception:
+            self._stop_reader.clear()
+            self._reader_thread = threading.Thread(target=self._read_loop, daemon=True)
+            self._reader_thread.start()
+        except Exception as exc:
             self._ready = False
-            return False
-
-        # Start background listener
-        self._stop_reader.clear()
-        self._reader_thread = threading.Thread(
-            target=self._read_loop, daemon=True)
-        self._reader_thread.start()
+            self._last_error = exc
+            if self._bus is not None:
+                self.shutdown()
+            raise
         return True
 
     def shutdown(self) -> None:
-        self._stop_reader.set()
-        if self._reader_thread:
-            self._reader_thread.join(timeout=1.0)
-        with self._lock:
-            if self._bus:
+        try:
+            if self._bus is not None:
+                self.emergency_stop()
+        finally:
+            self._stop_reader.set()
+            try:
+                if self._reader_thread and self._reader_thread.is_alive():
+                    self._reader_thread.join(timeout=1.0)
+            finally:
                 try:
-                    self._bus.shutdown()
-                except Exception:
-                    pass
-                self._bus = None
-        self._ready = False
+                    with self._lock:
+                        if self._bus is not None:
+                            self._bus.shutdown()
+                finally:
+                    self._bus = None
+                    self._ready = False
 
     # ────────────────────────────────────────────────────────────────────
     # Commands
@@ -128,12 +146,12 @@ class SocketCANDriver(MotorDriverInterface):
         self._send(_CMD_PWM_BASE + int(channel), data)
 
     def set_direction(self, channel: int, forward: bool) -> None:
-        """Set direction bit only — duty remains as last set_pwm value."""
+        """Send existing direction command with zero duty (protocol has no separate direction ID)."""
         data = struct.pack('<BH', 1 if forward else 0, 0)
         self._send(_CMD_PWM_BASE + int(channel), data)
 
     def emergency_stop(self) -> None:
-        """Broadcast e-stop — all motor controllers zero output immediately."""
+        """Send existing estop frame; physical stop behavior is unverified."""
         self._send(_CMD_ESTOP, b'')
 
     def heartbeat(self) -> None:
@@ -145,12 +163,14 @@ class SocketCANDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def read_encoder(self, channel: int) -> int:
+        self._require_healthy()
         with self._lock:
             if 0 <= channel < len(self._encoders):
                 return self._encoders[channel]
         return 0
 
     def read_current(self, channel: int) -> float:
+        self._require_healthy()
         with self._lock:
             if 0 <= channel < len(self._currents):
                 return self._currents[channel]
@@ -161,8 +181,11 @@ class SocketCANDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def _send(self, arb_id: int, data: bytes) -> None:
-        if not self._ready or self._bus is None:
-            return
+        if self._bus is None:
+            raise RuntimeError('driver transport is not open') from self._last_error
+        # Permit only a best-effort stop after a reader/transport fault.
+        if arb_id != _CMD_ESTOP:
+            self._require_healthy()
         try:
             import can  # type: ignore
             frame = can.Message(
@@ -172,8 +195,10 @@ class SocketCANDriver(MotorDriverInterface):
             )
             with self._lock:
                 self._bus.send(frame, timeout=0.05)
-        except Exception:
+        except Exception as exc:
             self._ready = False
+            self._last_error = exc
+            raise
 
     def _read_loop(self) -> None:
         """Background thread: parse incoming encoder / current frames."""
@@ -185,8 +210,9 @@ class SocketCANDriver(MotorDriverInterface):
                 if frame is None:
                     continue
                 self._parse_frame(frame)
-            except Exception:
+            except Exception as exc:
                 self._ready = False
+                self._last_error = exc
                 break
 
     def _parse_frame(self, frame) -> None:

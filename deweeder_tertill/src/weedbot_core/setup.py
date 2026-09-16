@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from glob import glob
 import os
 
@@ -7,14 +7,14 @@ package_name = 'weedbot_core'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name],
+    packages=find_packages(exclude=["test", "tests"]),
     data_files=[
         # ament resource index
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         # package manifest
         ('share/' + package_name, ['package.xml']),
         # install launch files so ros2 launch can find them
-        ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
+        ('share/' + package_name + '/launch', glob('launch/*.py') + glob('launch/*.yaml')),
         # (optional) install any node-related config or other assets here
     ],
     install_requires=['setuptools'],

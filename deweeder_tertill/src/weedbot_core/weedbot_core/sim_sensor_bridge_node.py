@@ -1,166 +1,81 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+"""Fresh raw Gazebo inputs -> sensor packets, with no reconstruction feedback.
+
+Required sources: /sim/raw/odom, /sim/raw/imu, /gazebo/front_contact and
+/gazebo/belly_contact. Missing/stale sources suppress packets; downstream safety
+then expires. Side/rear contacts and motor currents remain unmodeled, not verified
+healthy hardware signals. tick_time is the source-odom interval between emitted
+snapshots; first/recovery snapshots use zero to invalidate velocity.
 """
-sim_sensor_bridge_node.py
-─────────────────────────
-Simulation-only node.  Bridges Gazebo contact sensor output and odometry
-into the MicroSensorPacket that the rest of the weedbot_core pipeline
-expects.  This keeps robot_state_node, behavior_node, and safety_node
-completely unchanged between simulation and hardware.
-
-Topic flow
-──────────
-  /gazebo/front_contact  (ros_gz_interfaces/Contacts)  → cap_front
-  /gazebo/belly_contact  (ros_gz_interfaces/Contacts)  → belly_contact
-  /odom                  (nav_msgs/Odometry)            → wheel_encoder (derived)
-  /imu                   (sensor_msgs/Imu)              → imu_linear, imu_angular
-
-  → /micro/sensor_packet (weedbot_msgs/MicroSensorPacket)   @ 50 Hz
-"""
-
 import math
+
 import rclpy
 from rclpy.node import Node
+from rclpy.clock import Clock
+from rclpy.clock_type import ClockType
+from rclpy.qos import qos_profile_sensor_data
+from rcl_interfaces.msg import ParameterDescriptor
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
 from weedbot_msgs.msg import MicroSensorPacket
+from weedbot_core.sim_sensor_cache import SimSensorCache
 
 try:
     from ros_gz_interfaces.msg import Contacts
-    _HAS_CONTACTS = True
 except ImportError:
-    _HAS_CONTACTS = False
-
-# Physical constants matching weedbot.urdf
-_WHEEL_RADIUS = 0.035        # m
-_WHEEL_SEP = 0.14            # m  (left-right center distance)
-_TICKS_PER_REV = 2048        # encoder resolution
-_TICKS_PER_METER = _TICKS_PER_REV / (2.0 * math.pi * _WHEEL_RADIUS)
+    Contacts = None
 
 
 class SimSensorBridgeNode(Node):
     def __init__(self):
         super().__init__('sim_sensor_bridge')
-
-        # ── internal state ──────────────────────────────────────────────
-        self._cap_front = False
-        self._belly_contact = False
-        self._imu_linear = [0.0, 0.0, 9.81]   # z = 1g at rest
-        self._imu_angular = [0.0, 0.0, 0.0]
-
-        # Accumulated encoder counts (float, cast to int when publishing)
-        self._enc = [0.0, 0.0, 0.0, 0.0]      # FL, FR, RL, RR
-
-        self._last_stamp = None   # used to compute dt between odom callbacks
-
-        # ── subscribers ─────────────────────────────────────────────────
-        if _HAS_CONTACTS:
-            self.create_subscription(
-                Contacts, '/gazebo/front_contact', self._front_cb, 10)
-            self.create_subscription(
-                Contacts, '/gazebo/belly_contact', self._belly_cb, 10)
+        self.declare_parameter('source_timeout', 0.5, ParameterDescriptor(read_only=True))
+        self._cache = SimSensorCache(source_timeout=self.get_parameter('source_timeout').value)
+        self._pub = self.create_publisher(MicroSensorPacket, '/micro/sensor_packet', 10)
+        self.create_subscription(Odometry, '/sim/raw/odom', self._odom_cb, qos_profile_sensor_data)
+        self.create_subscription(Imu, '/sim/raw/imu', self._imu_cb, qos_profile_sensor_data)
+        if Contacts is not None:
+            self.create_subscription(Contacts, '/gazebo/front_contact', self._front_cb,
+                                     qos_profile_sensor_data)
+            self.create_subscription(Contacts, '/gazebo/belly_contact', self._belly_cb,
+                                     qos_profile_sensor_data)
         else:
-            self.get_logger().warn(
-                'ros_gz_interfaces not found — contact topics disabled. '
-                'Install ros-jazzy-ros-gz-interfaces and rebuild.')
-
-        self.create_subscription(Odometry, '/odom', self._odom_cb, 10)
-        self.create_subscription(Imu, '/imu', self._imu_cb, 10)
-
-        # ── publisher ───────────────────────────────────────────────────
-        self._pub = self.create_publisher(
-            MicroSensorPacket, '/micro/sensor_packet', 10)
-
-        # Publish at 50 Hz (matches sensor update_rate in URDF)
-        self.create_timer(0.02, self._publish)
-
-        self.get_logger().info('SimSensorBridgeNode started')
-
-    # ────────────────────────────────────────────────────────────────────
-    # Contact callbacks
-    # ────────────────────────────────────────────────────────────────────
+            self.get_logger().error('Contact message support unavailable; sensor packets inhibited')
+        self._steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
+        self._timer = self.create_timer(0.02, self._publish, clock=self._steady_clock)
 
     def _front_cb(self, msg):
-        # Any non-empty contacts list means something is touching the bumper
-        self._cap_front = len(msg.contacts) > 0
+        self._cache.update_contact('front_contact', bool(msg.contacts))
 
     def _belly_cb(self, msg):
-        self._belly_contact = len(msg.contacts) > 0
+        self._cache.update_contact('belly_contact', bool(msg.contacts))
 
-    # ────────────────────────────────────────────────────────────────────
-    # Odometry → wheel encoder simulation
-    # ────────────────────────────────────────────────────────────────────
+    def _odom_cb(self, msg):
+        stamp = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        self._cache.update_odom(stamp, msg.twist.twist.linear.x, msg.twist.twist.angular.z)
 
-    def _odom_cb(self, msg: Odometry):
-        now_sec = (msg.header.stamp.sec
-                   + msg.header.stamp.nanosec * 1e-9)
-
-        if self._last_stamp is None:
-            self._last_stamp = now_sec
-            return
-
-        dt = now_sec - self._last_stamp
-        self._last_stamp = now_sec
-
-        if dt <= 0.0 or dt > 1.0:
-            # Skip abnormal time steps
-            return
-
-        # Chassis velocities from the diff-drive plugin
-        v = msg.twist.twist.linear.x    # forward velocity (m/s)
-        w = msg.twist.twist.angular.z   # yaw rate (rad/s)
-
-        # Per-side velocities
-        v_left = v - w * _WHEEL_SEP / 2.0
-        v_right = v + w * _WHEEL_SEP / 2.0
-
-        # Integrate to encoder tick delta
-        d_left = v_left * dt * _TICKS_PER_METER
-        d_right = v_right * dt * _TICKS_PER_METER
-
-        # Four wheels: FL=0, FR=1, RL=2, RR=3
-        self._enc[0] += d_left    # FL
-        self._enc[1] += d_right   # FR
-        self._enc[2] += d_left    # RL
-        self._enc[3] += d_right   # RR
-
-    # ────────────────────────────────────────────────────────────────────
-    # IMU callback
-    # ────────────────────────────────────────────────────────────────────
-
-    def _imu_cb(self, msg: Imu):
-        self._imu_linear = [
-            msg.linear_acceleration.x,
-            msg.linear_acceleration.y,
-            msg.linear_acceleration.z,
-        ]
-        self._imu_angular = [
-            msg.angular_velocity.x,
-            msg.angular_velocity.y,
-            msg.angular_velocity.z,
-        ]
-
-    # ────────────────────────────────────────────────────────────────────
-    # Publish MicroSensorPacket
-    # ────────────────────────────────────────────────────────────────────
+    def _imu_cb(self, msg):
+        valid = (math.isfinite(msg.linear_acceleration_covariance[0]) and
+                 math.isfinite(msg.angular_velocity_covariance[0]) and
+                 msg.linear_acceleration_covariance[0] >= 0 and
+                 msg.angular_velocity_covariance[0] >= 0)
+        a, w = msg.linear_acceleration, msg.angular_velocity
+        self._cache.update_imu([a.x, a.y, a.z], [w.x, w.y, w.z], valid=valid)
 
     def _publish(self):
-        pkt = MicroSensorPacket()
-
-        pkt.wheel_encoder = [int(e) for e in self._enc]
-
-        pkt.cap_front = self._cap_front
-        pkt.cap_left = False
-        pkt.cap_right = False
-        pkt.cap_rear = False
-        pkt.belly_contact = self._belly_contact
-
-        pkt.imu_linear = [float(v) for v in self._imu_linear]
-        pkt.imu_angular = [float(v) for v in self._imu_angular]
-
-        pkt.motor_currents = [0.0] * 6  # not simulated
-        pkt.tick_time = 0.02            # matches timer period
-
-        self._pub.publish(pkt)
+        values = self._cache.packet()
+        if values is None:
+            return
+        packet = MicroSensorPacket()
+        packet.wheel_encoder = values['wheel_encoder']
+        packet.imu_linear = [float(v) for v in values['imu_linear']]
+        packet.imu_angular = [float(v) for v in values['imu_angular']]
+        packet.cap_front = values['cap_front']
+        packet.belly_contact = values['belly_contact']
+        packet.cap_left = packet.cap_right = packet.cap_rear = False
+        packet.motor_currents = [0.0] * 6
+        packet.tick_time = float(values['tick_time'])
+        self._pub.publish(packet)
 
 
 def main(args=None):

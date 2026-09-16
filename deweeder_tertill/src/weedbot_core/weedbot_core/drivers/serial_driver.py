@@ -20,8 +20,8 @@ If a command fails the MCU responds with:
 
 Usage
 ─────
-Instantiate SerialDriver, call init().  If init() returns False the HAL
-falls back to MockDriver automatically.
+Instantiate SerialDriver and call init(); initialization failures propagate.
+Hardware failure must never select a mock backend.
 """
 
 import json
@@ -34,8 +34,26 @@ from weedbot_core.hal.driver_interface import MotorDriverInterface
 class SerialDriver(MotorDriverInterface):
     """
     UART driver.  Requires pyserial (`pip install pyserial`).
-    Falls back gracefully if the port is absent or pyserial is not installed.
+    Transport failures propagate; tool control is not implemented or verified.
     """
+
+    supports_tool = False
+
+    def is_healthy(self) -> bool:
+        """Transport status only; no physical actuator or firmware verification."""
+        return bool(self._connected and self._serial is not None and self._last_error is None)
+
+    def apply_tool(self, front: bool, mode: int, agitator: bool) -> None:
+        if type(front) is not bool or type(agitator) is not bool or type(mode) is not int or mode < 0:
+            raise ValueError('tool state requires booleans and a nonnegative integer mode')
+        if front or mode or agitator:
+            raise NotImplementedError('tool firmware protocol is not implemented or verified')
+        # Neutral is an interface no-op, NOT a verified physical tool stop.
+        # The gate refuses hardware arming while supports_tool remains False.
+
+    def _require_healthy(self) -> None:
+        if not self.is_healthy():
+            raise RuntimeError('driver transport is unavailable or faulted') from self._last_error
 
     def __init__(
         self,
@@ -49,6 +67,7 @@ class SerialDriver(MotorDriverInterface):
 
         self._serial = None
         self._connected = False
+        self._last_error = None
         self._lock = threading.Lock()
 
         # Latest sensor frame received from MCU
@@ -64,42 +83,41 @@ class SerialDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def init(self) -> bool:
+        if self._serial is not None:
+            raise RuntimeError('driver already has a transport; shutdown before reinitializing')
         try:
-            import serial  # type: ignore
-        except ImportError:
-            return False  # pyserial not installed → HAL falls back to mock
-
-        try:
-            self._serial = serial.Serial(
-                self._port,
-                self._baud,
-                timeout=0.1,
-                write_timeout=0.1,
-            )
+            import serial
+            self._serial = serial.Serial(self._port, self._baud, timeout=0.1, write_timeout=0.1)
+            self._last_error = None
             self._connected = True
-        except Exception:
+            self._stop_reader.clear()
+            self._reader_thread = threading.Thread(target=self._read_loop, daemon=True)
+            self._reader_thread.start()
+        except Exception as exc:
             self._connected = False
-            return False
-
-        # Start background thread that reads sensor frames from MCU
-        self._stop_reader.clear()
-        self._reader_thread = threading.Thread(
-            target=self._read_loop, daemon=True)
-        self._reader_thread.start()
+            self._last_error = exc
+            if self._serial is not None:
+                self.shutdown()
+            raise
         return True
 
     def shutdown(self) -> None:
-        self._stop_reader.set()
-        if self._reader_thread:
-            self._reader_thread.join(timeout=1.0)
-        with self._lock:
-            if self._serial:
+        try:
+            if self._serial is not None:
+                self.emergency_stop()
+        finally:
+            self._stop_reader.set()
+            try:
+                if self._reader_thread and self._reader_thread.is_alive():
+                    self._reader_thread.join(timeout=1.0)
+            finally:
                 try:
-                    self._serial.close()
-                except Exception:
-                    pass
-                self._serial = None
-        self._connected = False
+                    with self._lock:
+                        if self._serial is not None:
+                            self._serial.close()
+                finally:
+                    self._serial = None
+                    self._connected = False
 
     # ────────────────────────────────────────────────────────────────────
     # Commands (HOST → MCU)
@@ -115,7 +133,7 @@ class SerialDriver(MotorDriverInterface):
         self._send({'cmd': 'set_dir', 'ch': int(channel), 'fwd': bool(forward)})
 
     def emergency_stop(self) -> None:
-        """Broadcast emergency stop — MCU zeroes all PWM outputs immediately."""
+        """Send existing estop command; physical stop behavior is unverified."""
         self._send({'cmd': 'estop'})
 
     def heartbeat(self) -> None:
@@ -127,12 +145,14 @@ class SerialDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def read_encoder(self, channel: int) -> int:
+        self._require_healthy()
         with self._lock:
             if 0 <= channel < len(self._encoders):
                 return self._encoders[channel]
         return 0
 
     def read_current(self, channel: int) -> float:
+        self._require_healthy()
         with self._lock:
             if 0 <= channel < len(self._currents):
                 return self._currents[channel]
@@ -143,14 +163,21 @@ class SerialDriver(MotorDriverInterface):
     # ────────────────────────────────────────────────────────────────────
 
     def _send(self, obj: dict) -> None:
-        if not self._connected or self._serial is None:
-            return
+        if self._serial is None:
+            raise RuntimeError('driver transport is not open') from self._last_error
+        # Permit only a best-effort stop after a reader/transport fault.
+        if obj.get('cmd') != 'estop':
+            self._require_healthy()
         frame = (json.dumps(obj, separators=(',', ':')) + '\n').encode()
         with self._lock:
             try:
-                self._serial.write(frame)
-            except Exception:
+                written = self._serial.write(frame)
+                if written != len(frame):
+                    raise IOError('incomplete serial command write')
+            except Exception as exc:
                 self._connected = False
+                self._last_error = exc
+                raise
 
     def _read_loop(self) -> None:
         """Background thread: reads newline-delimited JSON from MCU."""
@@ -162,9 +189,9 @@ class SerialDriver(MotorDriverInterface):
                 if not raw:
                     continue
                 self._parse_frame(raw.decode(errors='replace').strip())
-            except Exception:
-                # Serial error — stop thread; HAL will detect disconnection
+            except Exception as exc:
                 self._connected = False
+                self._last_error = exc
                 break
 
     def _parse_frame(self, text: str) -> None:
@@ -172,12 +199,13 @@ class SerialDriver(MotorDriverInterface):
             return
         try:
             obj = json.loads(text)
-        except json.JSONDecodeError:
-            return
+        except json.JSONDecodeError as exc:
+            raise ValueError('invalid serial sensor frame') from exc
 
-        if 'err' in obj:
-            # MCU reported an error — log but don't crash
-            return
+        if not isinstance(obj, dict):
+            raise ValueError('serial sensor frame must be an object')
+        if 'err' in obj or obj.get('ok') is False:
+            raise RuntimeError('MCU reported an unhealthy state')
 
         with self._lock:
             if 'enc' in obj and isinstance(obj['enc'], list):

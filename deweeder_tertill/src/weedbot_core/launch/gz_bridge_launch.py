@@ -99,6 +99,8 @@ def launch_setup(context, *args, **kwargs):
                     # Joint states: Gazebo → ROS  (world "default", model "weedbot")
                     '/world/default/model/weedbot/joint_state'
                     '@sensor_msgs/msg/JointState[gz.msgs.Model',
+                    '--ros-args', '-r', '/odom:=/sim/raw/odom',
+                    '-r', '/imu:=/sim/raw/imu',
                 ],
                 output='screen',
             )
@@ -127,8 +129,6 @@ def launch_setup(context, *args, **kwargs):
                  name='robot_state_node', output='screen'),
             Node(package='weedbot_core', executable='safety_node',
                  name='safety_node', output='screen'),
-            Node(package='weedbot_core', executable='behavior_node',
-                 name='behavior_node', output='screen'),
             # HAL in mock mode — sim does not need real hardware drivers
             Node(package='weedbot_core', executable='hal_hw_gpio',
                  name='hal_hw_gpio', output='screen',
@@ -136,9 +136,6 @@ def launch_setup(context, *args, **kwargs):
             Node(package='weedbot_core', executable='motor_controller',
                  name='motor_controller', output='screen',
                  parameters=[{'hw_mode': False}]),
-            # Coverage planner — boustrophedon path
-            Node(package='weedbot_core', executable='coverage_planner',
-                 name='coverage_planner_node', output='screen'),
             # Data logger — logs motion data to CSV for hardware sizing
             # Remaps the bridged Gazebo joint state topic to the standard name
             Node(package='weedbot_core', executable='data_logger',

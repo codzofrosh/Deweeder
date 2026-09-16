@@ -9,6 +9,16 @@ class MotorDriverInterface(Protocol):
     Implementations must provide these methods.
     """
 
+    supports_tool: bool
+
+    def is_healthy(self) -> bool:
+        """Return transport/software health, never physical actuator verification."""
+        ...
+
+    def apply_tool(self, front: bool, mode: int, agitator: bool) -> None:
+        """Apply every tool output; unsupported active commands must raise."""
+        ...
+
     def init(self) -> bool:
         """Initialize hardware/driver. Return True if ready."""
         ...

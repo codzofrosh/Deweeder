@@ -78,6 +78,13 @@ class RobotStateNode(Node):
     # ────────────────────────────────────────────────────────────────────
 
     def _sensor_callback(self, msg: MicroSensorPacket):
+        # Reject corrupt packets rather than refreshing downstream freshness.
+        if (len(msg.wheel_encoder) != 4 or len(msg.imu_linear) != 3 or
+                len(msg.imu_angular) != 3 or not math.isfinite(msg.tick_time) or
+                msg.tick_time <= 0 or not all(math.isfinite(v) for v in
+                    (*msg.wheel_encoder, *msg.imu_linear, *msg.imu_angular))):
+            self._first_packet = True
+            return
         now = self.get_clock().now().to_msg()
 
         # ── IMU ──────────────────────────────────────────────────────────
@@ -100,6 +107,7 @@ class RobotStateNode(Node):
         # ── Odometry via encoder dead-reckoning ──────────────────────────
         enc = [_to_int(e) for e in msg.wheel_encoder]
 
+        dist_left = dist_right = 0.0
         if self._first_packet:
             # Initialise reference counts without computing motion
             self._prev_enc = enc[:]
@@ -146,19 +154,12 @@ class RobotStateNode(Node):
         odom.pose.pose.orientation.z = qz
         odom.pose.pose.orientation.w = qw
 
-        # Velocity in robot frame (from IMU angular + cap_front as forward proxy)
-        # In simulation the odom velocity is available; on hardware encoder deltas
-        # divided by tick_time give a reasonable estimate.
-        dt = _to_float(msg.tick_time) if msg.tick_time > 0.0 else 0.02
-        if not self._first_packet:
-            d_ticks_left = (_to_int(enc[0]) + _to_int(enc[2])) / 2.0 - (
-                self._prev_enc[0] + self._prev_enc[2]) / 2.0
-            d_ticks_right = (_to_int(enc[1]) + _to_int(enc[3])) / 2.0 - (
-                self._prev_enc[1] + self._prev_enc[3]) / 2.0
-            v_left = (d_ticks_left / _TICKS_PER_METER) / dt
-            v_right = (d_ticks_right / _TICKS_PER_METER) / dt
-            odom.twist.twist.linear.x = (v_left + v_right) / 2.0
-            odom.twist.twist.angular.z = (v_right - v_left) / _WHEEL_SEP
+        dt = float(msg.tick_time)
+        if math.isfinite(dt) and dt > 0:
+            odom.twist.twist.linear.x = (dist_left + dist_right) / (2.0 * dt)
+            odom.twist.twist.angular.z = (dist_right - dist_left) / (_WHEEL_SEP * dt)
+        else:
+            odom.twist.twist.linear.x = float('nan')
 
         self.odom_pub.publish(odom)
 
@@ -182,6 +183,7 @@ class RobotStateNode(Node):
         state.linear.x = 1.0 if msg.cap_front else 0.0
         state.linear.y = 1.0 if msg.belly_contact else 0.0
         state.angular.z = 1.0 if (msg.cap_left or msg.cap_right) else 0.0
+        state.angular.y = 1.0 if msg.cap_rear else 0.0
         self.state_pub.publish(state)
 
 

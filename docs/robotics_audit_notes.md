@@ -39,3 +39,11 @@ Scope: read-only review of `deweeder_tertill` ROS 2 core, messages, HAL, scripts
 Preserve the package split, message intent, backend interface, serial/CAN framing, differential-drive integration, coverage waypoint generator, and logging code as R&D assets. Treat backend transports and tool control as unvalidated prototypes. Prefer repairing a single explicit simulation-to-control command path over creating another parallel stack.
 
 Before simulation acceptance: resolve syntax/import/installation defects; define topic ownership and command arbitration; test autonomous watchdog expiry and immediate stop against a recording mock; validate odometry with known signed encoder deltas; verify completion stop; run a clean installed ROS 2 workspace launch. Before hardware acceptance: separately establish verified electrical/channel mapping, MCU stop behavior, tool interlocks, freshness/rearm rules, and transport fault tests. This audit does not authorize or perform that hardware stage.
+
+
+## Safety repair follow-up (2026-09-16)
+
+The audited HAL watchdog, stop and tool paths have now been repaired and tested
+with mock outputs. See [HAL safety verification](hal_safety_verification.md) for
+changed behavior, executable evidence and remaining ROS/hardware blockers.
+Powered testing remains inhibited.
