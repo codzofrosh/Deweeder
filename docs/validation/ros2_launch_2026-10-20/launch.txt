@@ -1,0 +1,25 @@
+[INFO] [launch]: All log files can be found below /home/roshan/.ros/log/2026-10-20-03-20-08-854006-Roshan-26245
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_node-1]: process started with pid [26248]
+[INFO] [safety_node-2]: process started with pid [26249]
+[INFO] [hal_hw_gpio-3]: process started with pid [26250]
+[INFO] [motor_controller-4]: process started with pid [26251]
+[motor_controller-4] [INFO] [1792466409.413441630] [motor_controller]: MotorController started (PID params: kp=1.0 ki=0.1 kd=0.01 dt=0.05)
+[safety_node-2] [INFO] [1792466409.526721507] [safety_node]: Safety state=2: contact input missing; IMU input missing; contact input missing or stale; IMU input missing or stale
+[safety_node-2] [INFO] [1792466412.422228462] [safety_node]: Safety state=2: contact input missing; contact input missing or stale
+[safety_node-2] [INFO] [1792466412.423272170] [safety_node]: Safety state=0: contacts clear; IMU within limits
+[safety_node-2] [INFO] [1792466416.071420374] [safety_node]: Safety state=3: emergency latched; extreme static tilt estimate
+[safety_node-2] [INFO] [1792466416.371964980] [safety_node]: Safety state=3: emergency latched; contacts clear; IMU within limits
+[safety_node-2] [INFO] [1792466417.155082626] [safety_node]: Safety state=0: contacts clear; IMU within limits
+[safety_node-2] [INFO] [1792466418.408720003] [safety_node]: Safety state=2: contact input missing or stale; IMU input missing or stale
+[safety_node-2] [INFO] [1792466418.770784377] [safety_node]: Safety state=2: contact input missing or stale
+[safety_node-2] [INFO] [1792466418.771575934] [safety_node]: Safety state=0: contacts clear; IMU within limits
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [motor_controller-4]: sending signal 'SIGINT' to process[motor_controller-4]
+[INFO] [hal_hw_gpio-3]: sending signal 'SIGINT' to process[hal_hw_gpio-3]
+[INFO] [safety_node-2]: sending signal 'SIGINT' to process[safety_node-2]
+[INFO] [robot_state_node-1]: sending signal 'SIGINT' to process[robot_state_node-1]
+[INFO] [motor_controller-4]: process has finished cleanly [pid 26251]
+[INFO] [safety_node-2]: process has finished cleanly [pid 26249]
+[INFO] [hal_hw_gpio-3]: process has finished cleanly [pid 26250]
+[INFO] [robot_state_node-1]: process has finished cleanly [pid 26248]

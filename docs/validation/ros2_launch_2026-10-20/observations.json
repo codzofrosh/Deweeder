@@ -1,0 +1,453 @@
+[
+  {
+    "case": "hal_estop_active_tools",
+    "monotonic": 42942.648183735,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "emergency-stop asserted"
+  },
+  {
+    "case": "hal_estop_release_no_restart",
+    "monotonic": 42942.858642152,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "emergency-stop asserted"
+  },
+  {
+    "case": "hal_independent_heartbeat_loss",
+    "monotonic": 42944.580150422,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "heartbeat missing or stale"
+  },
+  {
+    "case": "hal_independent_safety_loss",
+    "monotonic": 42946.307974679,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "safety missing or stale"
+  },
+  {
+    "case": "hal_independent_feedback_loss",
+    "monotonic": 42948.029694439,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "feedback missing or stale"
+  },
+  {
+    "case": "hal_independent_motion_loss",
+    "monotonic": 42949.741178971,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "motion missing or stale"
+  },
+  {
+    "case": "hal_independent_tool_loss",
+    "monotonic": 42951.468176104,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "tool missing or stale"
+  },
+  {
+    "case": "hal_watchdog_with_frozen_ros_clock",
+    "monotonic": 42953.208196988,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "heartbeat missing or stale"
+  },
+  {
+    "case": "hal_shutdown_active_tools",
+    "monotonic": 42954.232212004,
+    "passed": true,
+    "pwm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool": [
+      false,
+      0,
+      false
+    ],
+    "reason": "shutdown"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42957.935363326,
+    "topic": "safety",
+    "value": 2
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42957.962816069,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42957.963351804,
+    "topic": "diag",
+    "value": "armed=False reason=safety STOP or EMERGENCY stop_errors=[]"
+  },
+  {
+    "case": "launch_missing_sensors",
+    "monotonic": 42958.048769889,
+    "passed": true,
+    "nodes": [
+      "acceptance_source",
+      "hal_hw_gpio",
+      "motor_controller",
+      "robot_state_node",
+      "safety_node"
+    ],
+    "state": {
+      "ready": false,
+      "safety": 2,
+      "diag": "armed=False reason=safety STOP or EMERGENCY stop_errors=[]"
+    }
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42958.099724676,
+    "topic": "safety",
+    "value": 0
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42959.162670422,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42959.163331386,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42959.762717684,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42959.76351647,
+    "topic": "diag",
+    "value": "armed=False reason=emergency-stop asserted stop_errors=[]"
+  },
+  {
+    "case": "launch_estop_no_auto_restart",
+    "monotonic": 42960.195985258,
+    "passed": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42961.362720134,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42961.363312197,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42961.747474173,
+    "topic": "safety",
+    "value": 3
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42961.762541453,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42961.763279884,
+    "topic": "diag",
+    "value": "armed=False reason=safety STOP or EMERGENCY stop_errors=[]"
+  },
+  {
+    "case": "launch_unsafe_reset_rejected",
+    "monotonic": 42962.024619981,
+    "passed": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42962.831691057,
+    "topic": "safety",
+    "value": 0
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42963.162850543,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42963.163538418,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42964.085158563,
+    "topic": "safety",
+    "value": 2
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42964.163479967,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42964.164239083,
+    "topic": "diag",
+    "value": "armed=False reason=safety STOP or EMERGENCY stop_errors=[]"
+  },
+  {
+    "case": "launch_source_loss",
+    "monotonic": 42964.406364515,
+    "source": "sensor",
+    "passed": true,
+    "observation_window_s": 0.8601714859978529,
+    "diag": "armed=False reason=safety STOP or EMERGENCY stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42964.448104184,
+    "topic": "safety",
+    "value": 0
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42965.562763409,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42965.564275328,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42966.563588214,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42966.564606843,
+    "topic": "diag",
+    "value": "armed=False reason=heartbeat missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_source_loss",
+    "monotonic": 42966.796017814,
+    "source": "heartbeat",
+    "passed": true,
+    "observation_window_s": 0.8607696940016467,
+    "diag": "armed=False reason=heartbeat missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42967.962904564,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42967.963785124,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42968.962787946,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42968.963487633,
+    "topic": "diag",
+    "value": "armed=False reason=motion missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_source_loss",
+    "monotonic": 42969.18319139,
+    "source": "motion",
+    "passed": true,
+    "observation_window_s": 0.8547810569943977,
+    "diag": "armed=False reason=motion missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42970.362728362,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42970.363455411,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42971.362992578,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42971.363611021,
+    "topic": "diag",
+    "value": "armed=False reason=tool missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_source_loss",
+    "monotonic": 42971.572997755,
+    "source": "tool",
+    "passed": true,
+    "observation_window_s": 0.855280258001585,
+    "diag": "armed=False reason=tool missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42972.76282219,
+    "topic": "ready",
+    "value": true
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42972.763763726,
+    "topic": "diag",
+    "value": "armed=True reason=armed stop_errors=[]"
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42975.562698245,
+    "topic": "ready",
+    "value": false
+  },
+  {
+    "case": "launch_topic",
+    "monotonic": 42975.563521767,
+    "topic": "diag",
+    "value": "armed=False reason=heartbeat missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_publisher_process_termination",
+    "monotonic": 42976.035303373,
+    "passed": true,
+    "diag": "armed=False reason=heartbeat missing or stale stop_errors=[]"
+  },
+  {
+    "case": "launch_shutdown",
+    "monotonic": 42976.35167008,
+    "returncode": 0
+  },
+  {
+    "case": "safety_frozen_clock_contacts_expiry",
+    "monotonic": 42978.051657221,
+    "passed": true,
+    "reason": "contact input missing or stale"
+  },
+  {
+    "case": "safety_frozen_clock_imu_expiry",
+    "monotonic": 42979.663389239,
+    "passed": true,
+    "reason": "IMU input missing or stale"
+  }
+]
