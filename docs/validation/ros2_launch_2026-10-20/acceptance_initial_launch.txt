@@ -1,0 +1,71 @@
+[INFO] [launch]: All log files can be found below /home/roshan/.ros/log/2026-10-20-03-17-33-651246-Roshan-25760
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_node-1]: process started with pid [25763]
+[INFO] [safety_node-2]: process started with pid [25764]
+[INFO] [hal_hw_gpio-3]: process started with pid [25765]
+[INFO] [motor_controller-4]: process started with pid [25766]
+[motor_controller-4] [INFO] [1792466254.361932168] [motor_controller]: MotorController started (PID params: kp=1.0 ki=0.1 kd=0.01 dt=0.05)
+[safety_node-2] [INFO] [1792466254.473371068] [safety_node]: Safety state=2: contact input missing; IMU input missing; contact input missing or stale; IMU input missing or stale
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [motor_controller-4]: sending signal 'SIGINT' to process[motor_controller-4]
+[INFO] [hal_hw_gpio-3]: sending signal 'SIGINT' to process[hal_hw_gpio-3]
+[INFO] [safety_node-2]: sending signal 'SIGINT' to process[safety_node-2]
+[INFO] [robot_state_node-1]: sending signal 'SIGINT' to process[robot_state_node-1]
+[motor_controller-4] Traceback (most recent call last):
+[motor_controller-4]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/motor_controller", line 33, in <module>
+[motor_controller-4]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'motor_controller')())
+[motor_controller-4]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[motor_controller-4]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/motor_controller.py", line 191, in main
+[motor_controller-4]     node.destroy_node()
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1958, in destroy_node
+[hal_hw_gpio-3] Traceback (most recent call last):
+[hal_hw_gpio-3]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/hal_hw_gpio", line 33, in <module>
+[hal_hw_gpio-3]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'hal_hw_gpio')())
+[hal_hw_gpio-3]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[hal_hw_gpio-3]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/hal_hw_gpio.py", line 101, in main
+[motor_controller-4]     self.destroy_subscription(self._subscriptions[0])
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1854, in destroy_subscription
+[hal_hw_gpio-3]     node.destroy_node()
+[hal_hw_gpio-3]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/hal_hw_gpio.py", line 88, in destroy_node
+[hal_hw_gpio-3]     super().destroy_node()
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1958, in destroy_node
+[safety_node-2] Traceback (most recent call last):
+[safety_node-2]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/safety_node", line 33, in <module>
+[motor_controller-4]     subscription.destroy()
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/subscription.py", line 101, in destroy
+[motor_controller-4]     self.handle.destroy_when_not_in_use()
+[motor_controller-4] KeyboardInterrupt
+[safety_node-2]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'safety_node')())
+[safety_node-2]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[safety_node-2]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/safety_node.py", line 84, in main
+[safety_node-2]     node.destroy_node()
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1962, in destroy_node
+[hal_hw_gpio-3]     self.destroy_subscription(self._subscriptions[0])
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1854, in destroy_subscription
+[robot_state_node-1] Traceback (most recent call last):
+[robot_state_node-1]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/robot_state_node", line 33, in <module>
+[robot_state_node-1]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'robot_state_node')())
+[robot_state_node-1]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[robot_state_node-1]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/robot_state_node.py", line 198, in main
+[hal_hw_gpio-3]     subscription.destroy()
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/subscription.py", line 101, in destroy
+[hal_hw_gpio-3]     self.handle.destroy_when_not_in_use()
+[hal_hw_gpio-3] KeyboardInterrupt
+[safety_node-2]     self.destroy_service(self._services[0])
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1886, in destroy_service
+[safety_node-2]     service.destroy()
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/service.py", line 123, in destroy
+[safety_node-2]     self.__service.destroy_when_not_in_use()
+[safety_node-2] KeyboardInterrupt
+[robot_state_node-1]     node.destroy_node()
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1962, in destroy_node
+[robot_state_node-1]     self.destroy_service(self._services[0])
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1886, in destroy_service
+[robot_state_node-1]     service.destroy()
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/service.py", line 123, in destroy
+[robot_state_node-1]     self.__service.destroy_when_not_in_use()
+[robot_state_node-1] KeyboardInterrupt
+[ERROR] [motor_controller-4]: process has died [pid 25766, exit code -2, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/motor_controller --ros-args -r __node:=motor_controller'].
+[ERROR] [safety_node-2]: process has died [pid 25764, exit code -2, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/safety_node --ros-args -r __node:=safety_node'].
+[ERROR] [robot_state_node-1]: process has died [pid 25763, exit code -2, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/robot_state_node --ros-args -r __node:=robot_state_node'].
+[ERROR] [hal_hw_gpio-3]: process has died [pid 25765, exit code -2, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/hal_hw_gpio --ros-args -r __node:=hal_hw_gpio --params-file /tmp/launch_params_wp5y38ku'].

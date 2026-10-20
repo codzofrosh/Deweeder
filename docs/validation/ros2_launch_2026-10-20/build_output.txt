@@ -1,0 +1,6 @@
+Starting >>> weedbot_msgs
+Finished <<< weedbot_msgs [14.2s]
+Starting >>> weedbot_core
+Finished <<< weedbot_core [3.16s]
+
+Summary: 2 packages finished [17.7s]

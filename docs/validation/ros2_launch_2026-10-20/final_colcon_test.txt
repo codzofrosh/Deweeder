@@ -1,0 +1,7 @@
+Starting >>> weedbot_msgs
+Finished <<< weedbot_msgs [0.19s]
+Starting >>> weedbot_core
+Finished <<< weedbot_core [2.04s]	[ with test failures ]
+
+Summary: 2 packages finished [2.50s]
+  1 package had test failures: weedbot_core

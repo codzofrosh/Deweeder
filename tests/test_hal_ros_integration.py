@@ -14,6 +14,29 @@ HAS_ROS = all(importlib.util.find_spec(name) is not None for name in
 
 @unittest.skipUnless(HAS_ROS, 'ROS runtime and built weedbot_msgs required')
 class HalRosIntegration(unittest.TestCase):
+    def test_safety_accepts_generated_imu_covariances_and_rejects_invalid(self):
+        import rclpy
+        from geometry_msgs.msg import Twist
+        from sensor_msgs.msg import Imu
+        from weedbot_core.safety_node import SafetyNode
+        rclpy.init(args=[])
+        node = SafetyNode()
+        try:
+            node._state_cb(Twist())
+            imu = Imu()
+            imu.linear_acceleration.z = 9.81
+            node._imu_cb(imu)
+            self.assertEqual(node._monitor.evaluate().state, 0)
+            imu.linear_acceleration_covariance[0] = -1.0
+            node._imu_cb(imu)
+            self.assertEqual(node._monitor.evaluate().state, 2)
+            imu.linear_acceleration_covariance[0] = float('nan')
+            node._imu_cb(imu)
+            self.assertEqual(node._monitor.evaluate().state, 2)
+        finally:
+            node.destroy_node()
+            rclpy.shutdown()
+
     def test_dds_emergency_stop_service_rearm_and_timer_expiry(self):
         import rclpy
         from rclpy.executors import SingleThreadedExecutor

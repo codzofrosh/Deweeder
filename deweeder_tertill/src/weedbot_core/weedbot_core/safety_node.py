@@ -54,7 +54,7 @@ class SafetyNode(Node):
                  msg.angular_velocity_covariance[0] >= 0)
         acceleration, rate = msg.linear_acceleration, msg.angular_velocity
         self._monitor.update_imu(acceleration.x, acceleration.y, acceleration.z,
-                                 rate.x, rate.y, rate.z, valid=valid)
+                                 rate.x, rate.y, rate.z, valid=bool(valid))
         self._publish()
 
     def _reset_cb(self, request, response):
@@ -82,7 +82,7 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()
 
 
 if __name__ == '__main__':

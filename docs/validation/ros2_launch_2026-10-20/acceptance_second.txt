@@ -1,0 +1,19 @@
+test_whole_launch (__main__.InstalledLaunch.test_whole_launch) ... FAIL
+
+======================================================================
+FAIL: test_whole_launch (__main__.InstalledLaunch.test_whole_launch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/rosha/Deweeder/tools/validate_ros_launch.py", line 106, in test_whole_launch
+    prepare()
+  File "/mnt/c/Users/rosha/Deweeder/tools/validate_ros_launch.py", line 89, in prepare
+    self.spin(.8); self.call('/safety/reset'); self.spin(.2); self.call('/hal/arm')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/rosha/Deweeder/tools/validate_ros_launch.py", line 48, in call
+    self.assertEqual(result.success,expected,(name,result.message))
+AssertionError: False != True : ('/safety/reset', 'reset rejected: invalid IMU input')
+
+----------------------------------------------------------------------
+Ran 1 test in 5.088s
+
+FAILED (failures=1)

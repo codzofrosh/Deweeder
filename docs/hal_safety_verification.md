@@ -1,5 +1,11 @@
 # HAL safety repair and verification
 
+Mock launch verification update (2026-10-20): both ROS packages built; installed mock acceptance passed 3 tests/19 checkpoints; regression passed 205 tests with zero skips. Fixed generated-IMU boolean validation and duplicate ROS shutdown calls. Package lint remains failing (2 failures, 1 existing skip). See [full results and limits](ros2_mock_launch_acceptance.md). No powered-test or feature-freeze gate is lifted.
+
+
+ROS verification update (2026-10-19): the previously skipped HAL ROS/DDS test passed in Ubuntu WSL with Jazzy; the complete existing suite passed **204/204 with zero skips**. See [runtime evidence and remaining scope](ros2_wsl_validation.md). This does not release powered tests or change the current problem-validation/feature-freeze decisions. Earlier runtime-skip statements below are historical.
+
+
 Status: software repair verified with mock outputs and in-memory transports.
 **Powered testing is not released.** ROS/DDS integration and physical stopping
 remain unverified. No hardware ports were opened, tools powered, or robot driven.

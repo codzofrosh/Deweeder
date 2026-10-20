@@ -1,0 +1,14 @@
+test_independent_timeouts_paused_clock_and_shutdown (__main__.InstalledHalOutputs.test_independent_timeouts_paused_clock_and_shutdown) ... ok
+test_whole_launch (__main__.InstalledLaunch.test_whole_launch) ... ok
+test_independent_sensor_expiry_with_frozen_ros_clock (__main__.InstalledSafetyInputs.test_independent_sensor_expiry_with_frozen_ros_clock) ... [INFO] [1792466430.771042141] [safety_node]: Safety state=2: contact input missing; IMU input missing; contact input missing or stale; IMU input missing or stale
+[INFO] [1792466430.824192430] [safety_node]: Safety state=2: IMU input missing; IMU input missing or stale
+[INFO] [1792466430.824814630] [safety_node]: Safety state=0: contacts clear; IMU within limits
+[INFO] [1792466432.074036142] [safety_node]: Safety state=2: contact input missing or stale
+[INFO] [1792466432.423914824] [safety_node]: Safety state=0: contacts clear; IMU within limits
+[INFO] [1792466433.695658290] [safety_node]: Safety state=2: IMU input missing or stale
+ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 38.367s
+
+OK

@@ -1,0 +1,6 @@
+test_dds_emergency_stop_service_rearm_and_timer_expiry (test_hal_ros_integration.HalRosIntegration.test_dds_emergency_stop_service_rearm_and_timer_expiry) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.426s
+
+OK

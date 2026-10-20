@@ -1,0 +1,15 @@
+test_independent_timeouts_paused_clock_and_shutdown (__main__.InstalledHalOutputs.test_independent_timeouts_paused_clock_and_shutdown) ... ok
+test_whole_launch (__main__.InstalledLaunch.test_whole_launch) ... FAIL
+
+======================================================================
+FAIL: test_whole_launch (__main__.InstalledLaunch.test_whole_launch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/rosha/Deweeder/tools/validate_ros_launch.py", line 97, in test_whole_launch
+    self.assertTrue({'robot_state_node','safety_node','hal_hw_gpio','motor_controller'}<=names,names)
+AssertionError: False is not true : {'motor_controller', 'acceptance_source'}
+
+----------------------------------------------------------------------
+Ran 2 tests in 14.806s
+
+FAILED (failures=1)

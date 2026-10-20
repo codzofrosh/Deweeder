@@ -73,3 +73,5 @@ Use an otherwise unused domain. The acceptance runner launches and tears down it
 Evidence: [structured results and source hashes](validation/ros2_launch_2026-10-20/results.json), [runtime observations](validation/ros2_launch_2026-10-20/observations.json), [launch log](validation/ros2_launch_2026-10-20/launch.txt), [regression log](validation/ros2_launch_2026-10-20/final_full_suite.txt), [package failures](validation/ros2_launch_2026-10-20/final_colcon_results.txt), [acceptance runner](../tools/validate_ros_launch.py).
 
 Simulator integration, independent hardware watchdog, hardwired emergency interruption, actuator channel mapping and physical stop/coast times remain unverified. The problem-validation roadmap and freeze on new features remain unchanged.
+
+Repository scope: the 205-test count describes the full local workspace captured by the source hashes. Additional study/configuration modules in that workspace are outside this ROS-fix commit, so a clean remote checkout may discover fewer root-suite tests. The installed ROS acceptance runner and its ROS package dependencies are included. Raw build logs retain original whitespace for evidence integrity.

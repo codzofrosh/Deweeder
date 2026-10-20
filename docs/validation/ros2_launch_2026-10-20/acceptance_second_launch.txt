@@ -1,0 +1,71 @@
+[INFO] [launch]: All log files can be found below /home/roshan/.ros/log/2026-10-20-03-18-09-949404-Roshan-25909
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_node-1]: process started with pid [25912]
+[INFO] [safety_node-2]: process started with pid [25913]
+[INFO] [hal_hw_gpio-3]: process started with pid [25914]
+[INFO] [motor_controller-4]: process started with pid [25915]
+[motor_controller-4] [INFO] [1792466290.615605278] [motor_controller]: MotorController started (PID params: kp=1.0 ki=0.1 kd=0.01 dt=0.05)
+[safety_node-2] [INFO] [1792466290.732395816] [safety_node]: Safety state=2: contact input missing; IMU input missing; contact input missing or stale; IMU input missing or stale
+[safety_node-2] [INFO] [1792466293.354352628] [safety_node]: Safety state=2: contact input missing; invalid IMU input; contact input missing or stale
+[safety_node-2] [INFO] [1792466293.355179627] [safety_node]: Safety state=2: invalid IMU input
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [motor_controller-4]: sending signal 'SIGINT' to process[motor_controller-4]
+[INFO] [hal_hw_gpio-3]: sending signal 'SIGINT' to process[hal_hw_gpio-3]
+[INFO] [safety_node-2]: sending signal 'SIGINT' to process[safety_node-2]
+[INFO] [robot_state_node-1]: sending signal 'SIGINT' to process[robot_state_node-1]
+[motor_controller-4] Traceback (most recent call last):
+[motor_controller-4]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/motor_controller", line 33, in <module>
+[motor_controller-4]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'motor_controller')())
+[safety_node-2] Traceback (most recent call last):
+[safety_node-2]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/safety_node", line 33, in <module>
+[safety_node-2]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'safety_node')())
+[safety_node-2]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[safety_node-2]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/safety_node.py", line 85, in main
+[motor_controller-4]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[motor_controller-4]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/motor_controller.py", line 192, in main
+[motor_controller-4]     rclpy.shutdown()
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[motor_controller-4]     _shutdown(context=context)
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[motor_controller-4]     context.shutdown()
+[motor_controller-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[motor_controller-4]     self.__context.shutdown()
+[motor_controller-4] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[safety_node-2]     rclpy.shutdown()
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[safety_node-2]     _shutdown(context=context)
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[safety_node-2]     context.shutdown()
+[safety_node-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[safety_node-2]     self.__context.shutdown()
+[safety_node-2] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[hal_hw_gpio-3] Traceback (most recent call last):
+[hal_hw_gpio-3]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/hal_hw_gpio", line 33, in <module>
+[hal_hw_gpio-3]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'hal_hw_gpio')())
+[hal_hw_gpio-3]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[hal_hw_gpio-3]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/hal_hw_gpio.py", line 102, in main
+[robot_state_node-1] Traceback (most recent call last):
+[robot_state_node-1]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/robot_state_node", line 33, in <module>
+[robot_state_node-1]     sys.exit(load_entry_point('weedbot-core==0.0.0', 'console_scripts', 'robot_state_node')())
+[hal_hw_gpio-3]     rclpy.shutdown()
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[hal_hw_gpio-3]     _shutdown(context=context)
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[hal_hw_gpio-3]     context.shutdown()
+[hal_hw_gpio-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[hal_hw_gpio-3]     self.__context.shutdown()
+[hal_hw_gpio-3] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[robot_state_node-1]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[robot_state_node-1]   File "/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/python3.12/site-packages/weedbot_core/robot_state_node.py", line 199, in main
+[robot_state_node-1]     rclpy.shutdown()
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[robot_state_node-1]     _shutdown(context=context)
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[robot_state_node-1]     context.shutdown()
+[robot_state_node-1]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[robot_state_node-1]     self.__context.shutdown()
+[robot_state_node-1] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[ERROR] [motor_controller-4]: process has died [pid 25915, exit code 1, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/motor_controller --ros-args -r __node:=motor_controller'].
+[ERROR] [safety_node-2]: process has died [pid 25913, exit code 1, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/safety_node --ros-args -r __node:=safety_node'].
+[ERROR] [hal_hw_gpio-3]: process has died [pid 25914, exit code 1, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/hal_hw_gpio --ros-args -r __node:=hal_hw_gpio --params-file /tmp/launch_params__lmc4eo1'].
+[ERROR] [robot_state_node-1]: process has died [pid 25912, exit code 1, cmd '/home/roshan/deweeder_launch_validation/install/weedbot_core/lib/weedbot_core/robot_state_node --ros-args -r __node:=robot_state_node'].
